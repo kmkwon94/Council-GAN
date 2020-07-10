@@ -1,0 +1,48 @@
+<!-- fileupload html 만들기-->
+<html>
+  <head>
+
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    <title>Council-GAN</title>    
+</head>
+  <body>
+    <div class = "container">
+      <div class="jumbotron mt-3">
+        <h1>Council-GAN</h1>
+          <A>Git Hub repository : </A> <A href="https://github.com/kmkwon94/Council-GAN"> Council-GAN</A>
+          <br>
+          <A>Testing API : </A> <A href="https://ainize.ai/woomurf/ainize-color-transfer"> on Ainize </A>
+          <hr class="solid">
+          <form action="/fileUpload" method="POST" enctype="multipart/form-data">
+          <h1>Choose Model</h1>
+            <label
+              ><input type="radio" name="check_model" value="ani" />person2anime</label
+            >
+            <label
+              ><input type="radio" name="check_model" value="m2f" />male2female</label
+            >
+            <label
+              ><input type="radio" name="check_model" value="nogl" />no glasses</label
+            >
+          <h1>Upload </h1>
+            <label for="source">Input image : </label>
+            <input type="file" name="file" style="margin-right: 10px; margin-bottom: 10px;"/>
+            <input type="submit" class="btn btn-primary btn-lg" style="margin-left: auto;" />
+          </form>
+          <div id ='resultBox' style="margin-left: auto; margin-right: auto;">
+            <p id='errorbox'></p>
+            <img id='resultImage' src="" alt="">
+          </div>
+      </div>
+    </div>
+  </body>
+</html>
+
+

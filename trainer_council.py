@@ -96,10 +96,11 @@ class Council_Trainer(nn.Module):
         if self.do_dis_council:
             self.dis_council_a2b_s = []
             self.dis_council_b2a_s = []
-
+        
         # defining all the networks
         for i in range(self.council_size):
             if self.do_a2b_conf:
+                
                 self.gen_a2b_s.append(
                     AdaINGen(hyperparameters['input_dim_a'], hyperparameters['gen'], cuda_device=self.cuda_device))  # auto-encoder for domain a2b
                 self.dis_a2b_s.append(
