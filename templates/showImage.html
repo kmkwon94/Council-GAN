@@ -3,8 +3,6 @@
   <head>
   </head>
   <body>
-    {{image_names}}
-    <hr>
     {% for image_name in image_names %}
     <img src="{{ url_for('static', filename=image_name)}}">
     {% endfor %}
