@@ -100,6 +100,8 @@ RUN mkdir upload/male2female
 RUN mkdir upload/no_glasses
 #change permission
 RUN chmod 777 /home/user/pretrain/m2f/128 
+
+EXPOSE 80
 # Set the default command to python3
 CMD python3 ./main.py
 
