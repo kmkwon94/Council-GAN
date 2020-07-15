@@ -23,12 +23,6 @@ RUN update-locale en_US.UTF-8
 RUN mkdir /app
 WORKDIR /app
 
-# Create a non-root user and switch to it
-#RUN adduser --disabled-password --gecos '' --shell /bin/bash user \
-# && chown -R user:user /app
-#RUN echo "user ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/90-user
-#USER user
-
 # All users can use /home/user as their home directory
 ENV HOME=/home/user
 #RUN chmod 777 /home/user
@@ -94,10 +88,6 @@ ENV PATH=/usr/local/cuda/bin${PATH:+:${PATH}}
 ENV LD_LIBRARY_PATH=/usr/local/cuda-10.1/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}
 ENV CUDA_HOME=/usr/local/cuda
 
-<<<<<<< HEAD
-=======
-
->>>>>>> f8e00d1b9642c611e6fac4a20e082b59f9c3f8cc
 #Set ascii environment
 ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
 
