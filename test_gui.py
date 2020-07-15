@@ -119,11 +119,11 @@ decode_s = []
 if opts.a2b:
     for i in range(council_size):
         encode_s.append(trainer.gen_a2b_s[i].encode)  # encode function
-        decode_s.append(trainer.gen_a2b_s[i].decode)  # decode function
+        decode_s.append(trainer.gen_a2b_s[i].decode('utf-8'))  # decode function
 else:
     for i in range(council_size):
         encode_s.append(trainer.gen_b2a_s[i].encode)  # encode function
-        decode_s.append(trainer.gen_b2a_s[i].decode)  # decode function
+        decode_s.append(trainer.gen_b2a_s[i].decode('utf-8'))  # decode function
 
 def load_net(checkpoint):
     try:
@@ -131,11 +131,11 @@ def load_net(checkpoint):
         if 'a2b' in checkpoint:
             trainer.gen_a2b_s[0].load_state_dict(state_dict['a2b'])
             encode_s[0] = trainer.gen_a2b_s[0].encode  # encode function
-            decode_s[0] = trainer.gen_a2b_s[0].decode  # decode function
+            decode_s[0] = trainer.gen_a2b_s[0].decode('utf-8')  # decode function
         else:
             trainer.gen_b2a_s[0].load_state_dict(state_dict['b2a'])
             encode_s[0] = trainer.gen_b2a_s[0].encode  # encode function
-            decode_s[0] = trainer.gen_b2a_s[0].decode  # decode function
+            decode_s[0] = trainer.gen_b2a_s[0].decode('utf-8')  # decode function
     except Exception as e:
         print(e)
         warnings.warn('FAILED to load network! the yaml config file might be wrong ')

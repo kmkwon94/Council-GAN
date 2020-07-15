@@ -94,6 +94,10 @@ ENV PATH=/usr/local/cuda/bin${PATH:+:${PATH}}
 ENV LD_LIBRARY_PATH=/usr/local/cuda-10.1/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}
 ENV CUDA_HOME=/usr/local/cuda
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> f8e00d1b9642c611e6fac4a20e082b59f9c3f8cc
 #Set ascii environment
 ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
 
