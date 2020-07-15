@@ -11,23 +11,27 @@ RUN apt-get update && apt-get install -y \
     tmux \
     htop \
     nano \
-	vim \
-	wget \
+    vim \
+    wget \
+    locales \
+    libgl1-mesa-glx \
  && rm -rf /var/lib/apt/lists/*
 
+RUN locale-gen en_US.UTF-8
+RUN update-locale en_US.UTF-8
 # Create a working directory
 RUN mkdir /app
 WORKDIR /app
 
 # Create a non-root user and switch to it
-RUN adduser --disabled-password --gecos '' --shell /bin/bash user \
- && chown -R user:user /app
-RUN echo "user ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/90-user
-USER user
+#RUN adduser --disabled-password --gecos '' --shell /bin/bash user \
+# && chown -R user:user /app
+#RUN echo "user ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/90-user
+#USER user
 
 # All users can use /home/user as their home directory
 ENV HOME=/home/user
-RUN chmod 777 /home/user
+#RUN chmod 777 /home/user
 
 # Install Miniconda
 WORKDIR /home/user
@@ -53,7 +57,6 @@ RUN conda install -y -c pytorch \
     "pytorch=1.4.0=py3.6_cuda10.1.243_cudnn7.6.3_0" \
     "torchvision=0.5.0=py36_cu101" \
  && conda clean -ya
-
 # Install HDF5 Python bindings
 RUN conda install -y h5py=2.8.0 \
  && conda clean -ya
@@ -76,6 +79,8 @@ RUN conda install -c omnia termcolor
 RUN conda install -c conda-forge python-telegram-bot \
  && conda clean -ya
 
+# Install PyQt5
+RUN conda install -y pyqt=5
 # Install OpenCV3 Python bindings
 RUN sudo apt-get update && sudo apt-get install -y --no-install-recommends \
     libgtk2.0-0 \
@@ -84,6 +89,23 @@ RUN sudo apt-get update && sudo apt-get install -y --no-install-recommends \
 RUN conda install -y -c menpo opencv3=3.1.0 \
  && conda clean -ya
 
+#Set environment of Cuda 10.1
+ENV PATH=/usr/local/cuda/bin${PATH:+:${PATH}}
+ENV LD_LIBRARY_PATH=/usr/local/cuda-10.1/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}
+ENV CUDA_HOME=/usr/local/cuda
+
+#Set ascii environment
+ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
+
+RUN pip3 install flask
+RUN pip3 install flask_cors
+COPY . .
+RUN mkdir upload 
+RUN mkdir upload/person2anime
+RUN mkdir upload/male2female
+RUN mkdir upload/no_glasses
+#change permission
+RUN chmod 777 /home/user/pretrain/m2f/128 
 # Set the default command to python3
-CMD ["python3"]
+#CMD ["python3"]
 
