@@ -23,34 +23,7 @@ import shutil
 import uuid
 from tqdm import tqdm
 
-image_determination = [False,False,False]
-
-def set_image_determination(i):
-    image_determination[i] = True
-
-def get_image_determination(i):
-    return image_determination[i]
-
-def eraseUploadImage():
-    file_list= []
-    if get_image_determination(0) == True:
-        path= './upload/person2anime'
-        file_list = os.listdir(path)
-        for i in file_list:
-            os.remove(i)
-    elif get_image_determination(1) == True:
-        path= './upload/male2female'
-        file_list = os.listdir(path)
-        for i in file_list:
-            os.remove(i)
-    else:
-        path= './upload/no_glasses'
-        file_list = os.listdir(path)
-        for i in file_list:
-            os.remove(i)
-
 def runImageTransfer(config, checkpoint, input_folder, a2b):
-    #erase_static_folder()
     output_path = 'static'
     seed = 1
     num_style = 10
@@ -60,7 +33,6 @@ def runImageTransfer(config, checkpoint, input_folder, a2b):
 
     torch.manual_seed(seed)
     torch.cuda.manual_seed(seed)
-    print(input_folder)
     # Load experiment setting
     config = get_config(config)
     input_dim = config['input_dim_a'] if a2b else config['input_dim_b']
@@ -76,7 +48,6 @@ def runImageTransfer(config, checkpoint, input_folder, a2b):
                                         new_size=config['new_size_a'] if 'new_size_a' in config.keys() else config['new_size'],\
                                         crop=False, config=config, is_data_A=is_data_A)
 
-    print("data_loader : ",data_loader, " image_names : ", image_names)
     style_dim = config['gen']['style_dim']
     trainer = Council_Trainer(config)
     only_one = False
@@ -140,8 +111,8 @@ def runImageTransfer(config, checkpoint, input_folder, a2b):
 
 
     # creat testing images
-    file_list= []
-    user_id = str(uuid.uuid4())
+    file_list= [] 
+    user_id = str(uuid.uuid4()) #user마다 output 디렉터리를 따로 만들어주기 위해 uuid 사용
     seed = 1
     curr_image_num = -1
     for i, (images, names) in tqdm(enumerate(zip(data_loader, image_names)), total=num_of_images_to_test):
@@ -165,14 +136,10 @@ def runImageTransfer(config, checkpoint, input_folder, a2b):
             s = style[j].unsqueeze(0)
             outputs = decode_s[k](content, s, images)
             basename = os.path.basename(names[1])
-            #output_folder = outputs/council_glasses_removal_128
-            output_folder = os.path.join(output_path, 'img')
+            output_folder = os.path.join(output_path, 'img') #output_folder = static/img
                 
-                
-            #path = os.path.join(output_folder, checkpoint[-8:] + "_%02d" % j, user_id + '_out_' + str(curr_image_num) + '_' + str(j) + '.jpg')
             path_all_in_one = os.path.join(output_folder, user_id , '_out_' + str(curr_image_num) + '_' + str(j) + '.jpg')
             file_list.append(path_all_in_one)
-            print("path_all_in_one = " , path_all_in_one)
             do_all_in_one = True
             if do_all_in_one:
                 if not os.path.exists(os.path.dirname(path_all_in_one)):
@@ -180,14 +147,4 @@ def runImageTransfer(config, checkpoint, input_folder, a2b):
                     print(path_all_in_one)
                     os.makedirs(os.path.dirname(path_all_in_one))
             vutils.save_image(outputs.data, path_all_in_one, padding=0, normalize=True)
-    '''
-    if input_folder == '/home/user/upload/person2anime':
-        set_image_determination(0)
-    elif input_folder == '/home/user/upload/male2female':
-        set_image_determination(1)
-    else: set_image_determination(2)
-    eraseUploadImage()
-    '''
-    print(file_list)
-    #print(path_all_in_one)
     return file_list
