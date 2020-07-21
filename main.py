@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
-from flask import Flask, render_template, request, redirect, url_for, jsonify
+from flask import Flask, render_template, request, redirect, url_for, jsonify, Response
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
 from test_on_folder import runImageTransfer
-import os
+import os 
+import random
+import string
+import uuid
 
 app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
@@ -15,76 +18,100 @@ path = "./static"
 def render_file():
     return render_template('upload.html')
 
+@app.route('/healthz', methods=['GET','POST'])
+def healthz():
+    return "", 200
+
 @app.route('/fileUpload', methods=['GET', 'POST'])
 def fileupload():
     check_value = request.form['check_model']
-
+    
     if request.method == 'POST':
-        f = request.files['file']
-        # 저장할 경로 + 파일명
-        # redirect할 것을 method명으로 처리함
-        if check_value == "ani":
-            f.save('/home/user/upload/person2anime/' +
-            secure_filename(f.filename))
-            return redirect(url_for('person_To_anime'))
-        elif check_value == "m2f":
-            f.save('/home/user/upload/male2female/' +
-            secure_filename(f.filename))
-            return redirect(url_for('male_To_female'))
-        else:
-            f.save('/home/user/upload/no_glasses/' +
-            secure_filename(f.filename))
-            return redirect(url_for('no_glasses'))
+        try:
+            f = request.files['file']
+            # 저장할 경로 + 파일명
+            # redirect할 것을 method명으로 처리함
+            randomDirName = str(uuid.uuid4()) #사용자끼리의 업로드한 이미지가 겹치지 않게끔 uuid를 이용하여 사용자를 구분하는 디렉터리를 만든다.
+            if check_value == "ani":
+                os.mkdir('/home/user/upload/person2anime/' + randomDirName)
+                f.save('/home/user/upload/person2anime/' + randomDirName +'/' +
+                secure_filename(f.filename))
+                return redirect(url_for('person_To_anime', input_dir = randomDirName))
+            elif check_value == "m2f":
+                os.mkdir('/home/user/upload/male2female/' + randomDirName)
+                f.save('/home/user/upload/male2female/' + randomDirName +'/' +
+                secure_filename(f.filename))
+                return redirect(url_for('male_To_female', input_dir = randomDirName))
+            else:
+                os.mkdir('/home/user/upload/no_glasses/' + randomDirName)
+                f.save('/home/user/upload/no_glasses/' + randomDirName +'/' +
+                secure_filename(f.filename))
+                return redirect(url_for('no_glasses', input_dir = randomDirName))
+        except Exception as e:
+            return Response("upload file and load model is fail", status=400)
 
 #사용자의 입력을 받아서 각 원하는 결과물을 라우팅
 @app.route('/person2anime', methods=['GET', 'POST'])
 def person_To_anime():
-    modelType = "pretrain/anime/256/anime2face_council_folder.yaml"
-    #output = "static/person2anime"
-    checkpoint = "pretrain/anime/256/01000000"
-    input_ = "/home/user/upload/person2anime"
-    a2b = 0
-    file_list = runImageTransfer(modelType,checkpoint,input_,a2b)
+    try:
+        input_dir = request.args.get('input_dir', '_unknown_')
+        modelType = "pretrain/anime/256/anime2face_council_folder.yaml"
+        #output = "static/person2anime"
+        checkpoint = "pretrain/anime/256/01000000"
+        input_ = "/home/user/upload/person2anime/" + input_dir
+        a2b = 0
+        file_list = runImageTransfer(modelType,checkpoint,input_,a2b)
 
-    file_list.sort()
-    new_file_list = []
-    for i in file_list:
-        new_file_list.append(i.replace('static/','')) 
-    return render_template('showImage.html', image_names = new_file_list)
-    
+        file_list.sort()
+        new_file_list = []
+        for i in file_list:
+            new_file_list.append(i.replace('static/','')) 
+        return render_template('showImage.html', image_names = new_file_list)
+    except Exception as e:
+        return Response("person2anime is fail", status=400)    
+
 @app.route('/male2female', methods=['GET', 'POST'])
 def male_To_female():
-    modelType = "pretrain/m2f/256/male2female_council_folder.yaml"
-    #output = "static/male2female"
-    checkpoint = "pretrain/m2f/256/01000000"
-    input_ = "/home/user/upload/male2female"
-    a2b = 1
-    
-    file_list = runImageTransfer(modelType,checkpoint,input_,a2b)
-    
-    file_list.sort()
-    new_file_list = []
-    for i in file_list:
-        new_file_list.append(i.replace('static/',''))
+    try:
+        input_dir = request.args.get('input_dir', '_unknown_')
+        modelType = "pretrain/m2f/256/male2female_council_folder.yaml"
+        #output = "static/male2female"
+        checkpoint = "pretrain/m2f/256/01000000"
+        input_ = "/home/user/upload/male2female/" + input_dir
+        a2b = 1
 
-    return render_template('showImage.html', image_names = new_file_list)
+        file_list = runImageTransfer(modelType,checkpoint,input_,a2b)
+        file_list.sort()
+
+        new_file_list = []
+        print(file_list)
+        for i in file_list:
+            new_file_list.append(i.replace('static/',''))
+        print(new_file_list)
+        return render_template('showImage.html', image_names = new_file_list)
+    except Exception as e:
+        return Response("male2female is fail", status=400)
    
 @app.route('/noglasses', methods=['GET', 'POST'])
 def no_glasses():
-    modelType = "pretrain/glasses_removal/128/glasses_council_folder.yaml"
-    #output = "static/no_glasses"
-    checkpoint = "pretrain/glasses_removal/128/01000000"
-    input_ = "/home/user/upload/no_glasses"
-    a2b = 1
-    file_list = runImageTransfer(modelType,checkpoint,input_,a2b)    
-    
-    #no_glasses_path = path + "/img/01000000_all_in_1"
-    #file_list = os.listdir(no_glasses_path)
-    file_list.sort()
-    new_file_list = []
-    for i in file_list:
-        new_file_list.append(i.replace('static/',''))
-    return render_template('showImage.html', image_names = new_file_list)
+    try:
+        input_dir = request.args.get('input_dir', '_unknown_')
+        modelType = "pretrain/glasses_removal/128/glasses_council_folder.yaml"
+        #output = "static/no_glasses"
+        checkpoint = "pretrain/glasses_removal/128/01000000"
+        input_ = "/home/user/upload/no_glasses/" + input_dir
+        a2b = 1
+        file_list = runImageTransfer(modelType,checkpoint,input_,a2b)    
+        
+        #no_glasses_path = path + "/img/01000000_all_in_1"
+        #file_list = os.listdir(no_glasses_path)
+        file_list.sort()
+        new_file_list = []
+        for i in file_list:
+            new_file_list.append(i.replace('static/',''))
+        return render_template('showImage.html', image_names = new_file_list)
+    except Exception as e:
+        return Response("no_glasses is fail", status=400)
 
 if __name__ == '__main__':
     # server execute
