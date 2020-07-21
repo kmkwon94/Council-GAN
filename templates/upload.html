@@ -31,11 +31,23 @@
             <label
               ><input type="radio" name="check_model" value="nogl" />no glasses</label
             >
+
           <h1>Upload </h1>
             <label for="source">Input image : </label>
             <input type="file" name="file" style="margin-right: 10px; margin-bottom: 10px;"/>
             <input type="submit" class="btn btn-primary btn-lg" style="margin-left: auto;" />
           </form>
+          <div id="sampleBox">
+            <h1>Example</h1>
+            <figure>
+              <img class="img" src="https://raw.githubusercontent.com/woomurf/ainize-color-transfer/master/images/autumn.jpg" alt="sample_color_source">
+                  <figcaption>Sample Color source image</figcaption>
+            </figure>
+            <figure>
+              <img class="img" src="https://raw.githubusercontent.com/woomurf/ainize-color-transfer/master/images/autumn_fallingwater.jpeg" alt="sample_result">
+              <figcaption>Sample Result image</figcaption>
+            </figure>
+          </div>
           <div id ='resultBox' style="margin-left: auto; margin-right: auto;">
             <p id='errorbox'></p>
             <img id='resultImage' src="" alt="">
