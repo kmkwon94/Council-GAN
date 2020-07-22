@@ -3,8 +3,11 @@
   <head>
   </head>
   <body>
-    <div id=user_key>
-      {{user_key}}
+    <div id = user_output_key>
+      {{user_output_key}}
+    </div>
+    <div id = user_input_dir>
+      {{user_input_dir}}
     </div>
     {% for image_name in image_names %}
     <img src="{{ url_for('static', filename=image_name)}}">
@@ -12,9 +15,11 @@
     {% endfor %}
     <script src="{{ url_for('static', filename='js/jquery-3.5.1.js') }}"></script>
     <script>
-      var user_key = document.getElementById("user_key").innerHTML
+      var user_output_key = document.getElementById("user_output_key").innerHTML
+      var user_input_dir = document.getElementById("user_input_dir").innerHTML
       function timer(){
-        $.get('remove/' + user_key);
+        $.get('remove/' + user_output_key);
+        $.get('removeInputDir/' + user_input_dir);
       }
       setTimeout(timer,5000)
       clearTimeout(timer);

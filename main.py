@@ -65,7 +65,7 @@ def person_To_anime():
         a2b = 0
         file_list = runImageTransfer(modelType,checkpoint,input_,a2b)
         file_list.sort()
-
+        '''
         #remove input folder
         if os.path.isdir(input_):
             shutil.rmtree(input_)
@@ -73,7 +73,7 @@ def person_To_anime():
         else:
             print(input_)
             print("There is nothing to Delete")
-
+        '''
         new_file_list = []
         print(file_list)
         output_dir = file_list[0].replace('static/img/','')
@@ -82,7 +82,7 @@ def person_To_anime():
         for i in file_list:
             new_file_list.append(i.replace('static/',''))
         print(new_file_list)
-        return render_template('showImage.html', image_names = new_file_list, user_key = output_dir)
+        return render_template('showImage.html', image_names = new_file_list, user_output_key = output_dir, user_input_dir = input_)
     except Exception as e:
         return Response("person2anime is fail", status=400)    
 
@@ -98,7 +98,7 @@ def male_To_female():
 
         file_list = runImageTransfer(modelType,checkpoint,input_,a2b)
         file_list.sort()
-
+        '''
         #remove input folder
         if os.path.isdir(input_):
             shutil.rmtree(input_)
@@ -106,7 +106,7 @@ def male_To_female():
         else:
             print(input_)
             print("There is nothing to Delete")
-
+        '''
         new_file_list = []
         print(file_list)
         output_dir = file_list[0].replace('static/img/','')
@@ -115,7 +115,7 @@ def male_To_female():
         for i in file_list:
             new_file_list.append(i.replace('static/',''))
         print(new_file_list)
-        return render_template('showImage.html', image_names = new_file_list, user_key = output_dir)
+        return render_template('showImage.html', image_names = new_file_list, user_output_key = output_dir, user_input_dir = input_)
     except Exception as e:
         return Response("male2female is fail", status=400)
    
@@ -130,7 +130,7 @@ def no_glasses():
         a2b = 1
         file_list = runImageTransfer(modelType,checkpoint,input_,a2b)    
         file_list.sort()
-        
+        '''
         #remove input folder
         if os.path.isdir(input_):
             shutil.rmtree(input_)
@@ -138,7 +138,7 @@ def no_glasses():
         else:
             print(input_)
             print("There is nothing to Delete")
-
+        '''
         new_file_list = []
         print(file_list)
         output_dir = file_list[0].replace('static/img/','')
@@ -147,19 +147,31 @@ def no_glasses():
         for i in file_list:
             new_file_list.append(i.replace('static/',''))
         print(new_file_list)
-        return render_template('showImage.html', image_names = new_file_list, user_key = output_dir)
+        return render_template('showImage.html', image_names = new_file_list, user_output_key = output_dir, user_input_dir = input_)
     except Exception as e:
         return Response("no_glasses is fail", status=400)
 
-@app.route('/remove/<user_id>')
+@app.route('/remove/<user_id>', methods=['GET', 'POST'])
 def remove(user_id):
     remove_id = user_id.strip()
     print("now I start to remove file")
-    print("user key is" + remove_id)
+    print("user key is " + remove_id)
     path = os.path.join('static/img/', remove_id)
     try:
         if os.path.isdir(path):
             shutil.rmtree(path)
+        return Response("Delete complete", status=200)
+    except Exception as e:
+        return Response("There is nothing to delete please Try again", status=400)
+
+@app.route('/removeInputDir/<input_dir>', methods=['GET', 'POST'])
+def removeInputDir(input_dir):
+    remove_input_dir = input_dir.strip()
+    print("now I start to remove input file")
+    print("input dir is " + remove_input_dir)
+    try:
+        if os.path.isdir(remove_input_dir):
+            shutil.rmtree(remove_input_dir)
         return Response("Delete complete", status=200)
     except Exception as e:
         return Response("There is nothing to delete please Try again", status=400)
