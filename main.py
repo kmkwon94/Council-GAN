@@ -70,6 +70,7 @@ def person_To_anime():
         if os.path.isdir(input_dir):
             shutil.rmtree(input_dir)
         else:
+            print(input_dir)
             print("There is nothing to Delete")
 
         new_file_list = []
