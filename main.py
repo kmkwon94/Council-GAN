@@ -129,11 +129,13 @@ def no_glasses():
 
 @app.route('/remove/<user_id>')
 def remove(user_id):
+    remove_id = user_id.strip()
     print("now I start to remove file")
-    print("user key is" + user_id)
-    path = os.path.join('static/img/', user_id)
+    print("user key is" + remove_id)
+    path = os.path.join('static/img/', remove_id)
     shutil.rmtree(path)
     return Response("delete complete", status=200)
+    
 if __name__ == '__main__':
     # server execute
     app.run(host='0.0.0.0', port=80, debug=True)
