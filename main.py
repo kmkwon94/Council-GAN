@@ -119,6 +119,8 @@ def no_glasses():
 
 @app.route('/remove/<int:user_id>')
 def remove(user_id):
+    print("now I start to remove file")
+    print("user key is" + str(user_id))
     path = os.path.join('static/img/', str(user_id))
     shutil.rmtree(path)
 
