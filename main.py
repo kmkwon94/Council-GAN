@@ -166,7 +166,7 @@ def remove(user_id):
 
 @app.route('/removeInputDir/<input_dir>', methods=['GET', 'POST'])
 def removeInputDir(input_dir):
-    remove_input_dir = input_dir.strip()
+    remove_input_dir = input_dir.replace('/','').strip()
     print("now I start to remove input file")
     print("input dir is " + remove_input_dir)
     try:
