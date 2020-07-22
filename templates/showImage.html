@@ -13,7 +13,10 @@
     <script src="{{ url_for('static', filename='js/jquery-3.5.1.js') }}"></script>
     <script>
       var user_key = document.getElementById("user_key").innerHTML
-      $.get('remove/' + user_key);
+      var myTimer = setTimeout(function(){
+        $.get('remove/' + user_key);
+      }, 5000);
+      clearTimeout(myTimer);
     </script>
   </body>
 </html>
