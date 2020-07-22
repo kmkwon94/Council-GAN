@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from flask import Flask, render_template, request, redirect, url_for, jsonify, Response
+from flask import Flask, render_template, request, redirect, url_for, jsonify, Response, after_this_request
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
 from test_on_folder import runImageTransfer
@@ -7,6 +7,7 @@ import os
 import random
 import string
 import uuid
+import shutil
 
 app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
@@ -24,6 +25,7 @@ def healthz():
 
 @app.route('/fileUpload', methods=['GET', 'POST'])
 def fileupload():
+
     check_value = request.form['check_model']
     
     if request.method == 'POST':
@@ -31,7 +33,8 @@ def fileupload():
             f = request.files['file']
             # 저장할 경로 + 파일명
             # redirect할 것을 method명으로 처리함
-            randomDirName = str(uuid.uuid4()) #사용자끼리의 업로드한 이미지가 겹치지 않게끔 uuid를 이용하여 사용자를 구분하는 디렉터리를 만든다.
+            #randomDirName = str(uuid.uuid4()) #사용자끼리의 업로드한 이미지가 겹치지 않게끔 uuid를 이용하여 사용자를 구분하는 디렉터리를 만든다.
+            randomDirName = str(uuid.uuid4())
             if check_value == "ani":
                 os.mkdir('/home/user/upload/person2anime/' + randomDirName)
                 f.save('/home/user/upload/person2anime/' + randomDirName +'/' +
@@ -66,7 +69,8 @@ def person_To_anime():
         new_file_list = []
         for i in file_list:
             new_file_list.append(i.replace('static/','')) 
-        return render_template('showImage.html', image_names = new_file_list)
+        return render_template('showImage.html', image_names = new_file_list, user_key = input_dir)
+        
     except Exception as e:
         return Response("person2anime is fail", status=400)    
 
@@ -88,7 +92,7 @@ def male_To_female():
         for i in file_list:
             new_file_list.append(i.replace('static/',''))
         print(new_file_list)
-        return render_template('showImage.html', image_names = new_file_list)
+        return render_template('showImage.html', image_names = new_file_list, user_key = input_dir)
     except Exception as e:
         return Response("male2female is fail", status=400)
    
@@ -109,9 +113,14 @@ def no_glasses():
         new_file_list = []
         for i in file_list:
             new_file_list.append(i.replace('static/',''))
-        return render_template('showImage.html', image_names = new_file_list)
+        return render_template('showImage.html', image_names = new_file_list, user_key = input_dir)
     except Exception as e:
         return Response("no_glasses is fail", status=400)
+
+@app.route('/remove/<int:user_id>')
+def remove(user_id):
+    path = os.path.join('static/img/', str(user_id))
+    shutil.rmtree(path)
 
 if __name__ == '__main__':
     # server execute

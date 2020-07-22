@@ -3,9 +3,15 @@
   <head>
   </head>
   <body>
+    {{user_key}}
     {% for image_name in image_names %}
     <img src="{{ url_for('static', filename=image_name)}}">
+  
     {% endfor %}
-  </div>
+    <script src="{{ url_for('static', filename='jquery-3.5.1.js') }}"></script>
+    <script>
+      $.get('/remove' + user_key);
+    
+    </script>
   </body>
 </html>
