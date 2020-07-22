@@ -117,7 +117,7 @@ def no_glasses():
     except Exception as e:
         return Response("no_glasses is fail", status=400)
 
-@app.route('/remove/<str:user_id>')
+@app.route('/remove/<user_id>')
 def remove(user_id):
     print("now I start to remove file")
     print("user key is" + user_id)
