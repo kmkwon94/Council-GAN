@@ -65,7 +65,13 @@ def person_To_anime():
         a2b = 0
         file_list = runImageTransfer(modelType,checkpoint,input_,a2b)
         file_list.sort()
-        
+
+        #remove input folder
+        if os.path.isdir(input_dir):
+            shutil.rmtree(input_dir)
+        else:
+            print("There is nothing to Delete")
+
         new_file_list = []
         print(file_list)
         output_dir = file_list[0].replace('static/img/','')
@@ -91,6 +97,12 @@ def male_To_female():
         file_list = runImageTransfer(modelType,checkpoint,input_,a2b)
         file_list.sort()
 
+        #remove input folder
+        if os.path.isdir(input_dir):
+            shutil.rmtree(input_dir)
+        else:
+            print("There is nothing to Delete")
+
         new_file_list = []
         print(file_list)
         output_dir = file_list[0].replace('static/img/','')
@@ -114,6 +126,12 @@ def no_glasses():
         a2b = 1
         file_list = runImageTransfer(modelType,checkpoint,input_,a2b)    
         file_list.sort()
+        
+        #remove input folder
+        if os.path.isdir(input_dir):
+            shutil.rmtree(input_dir)
+        else:
+            print("There is nothing to Delete")
 
         new_file_list = []
         print(file_list)
@@ -133,9 +151,13 @@ def remove(user_id):
     print("now I start to remove file")
     print("user key is" + remove_id)
     path = os.path.join('static/img/', remove_id)
-    shutil.rmtree(path)
-    return Response("delete complete", status=200)
-    
+    try:
+        if os.path.isdir(path):
+            shutil.rmtree(path)
+        return Response("Delete complete", status=200)
+    except Exception as e:
+        return Response("There is nothing to delete please Try again", status=400)
+
 if __name__ == '__main__':
     # server execute
     app.run(host='0.0.0.0', port=80, debug=True)
