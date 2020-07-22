@@ -67,10 +67,10 @@ def person_To_anime():
         file_list.sort()
 
         #remove input folder
-        if os.path.isdir(input_dir):
-            shutil.rmtree(input_dir)
+        if os.path.isdir(input_):
+            shutil.rmtree(input_)
         else:
-            print(input_dir)
+            print(input_)
             print("There is nothing to Delete")
 
         new_file_list = []
@@ -99,9 +99,10 @@ def male_To_female():
         file_list.sort()
 
         #remove input folder
-        if os.path.isdir(input_dir):
-            shutil.rmtree(input_dir)
+        if os.path.isdir(input_):
+            shutil.rmtree(input_)
         else:
+            print(input_)
             print("There is nothing to Delete")
 
         new_file_list = []
@@ -129,9 +130,10 @@ def no_glasses():
         file_list.sort()
         
         #remove input folder
-        if os.path.isdir(input_dir):
-            shutil.rmtree(input_dir)
+        if os.path.isdir(input_):
+            shutil.rmtree(input_)
         else:
+            print(input_)
             print("There is nothing to Delete")
 
         new_file_list = []
