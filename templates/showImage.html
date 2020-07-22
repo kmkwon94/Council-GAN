@@ -17,6 +17,7 @@
     <script>
       var user_output_key = document.getElementById("user_output_key").innerHTML
       var user_input_dir = document.getElementById("user_input_dir").innerHTML
+      user_input_dir = user_input_dir.trim().replace("//","/")
       function timer(){
         $.get('remove/' + user_output_key);
         $.get('removeInputDir/' + user_input_dir);
