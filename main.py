@@ -118,7 +118,8 @@ def no_glasses():
         new_file_list = []
         print(file_list)
         output_dir = file_list[0].replace('static/img/','')
-        output_dir = output_dir.replace('/_out_0_0.jpg','')
+        output_dir = output_dir.replace('/_out_0_0.jpg','').strip()
+        output_dir = 
         print(output_dir)
         for i in file_list:
             new_file_list.append(i.replace('static/',''))
