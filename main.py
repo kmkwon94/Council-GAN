@@ -117,11 +117,11 @@ def no_glasses():
     except Exception as e:
         return Response("no_glasses is fail", status=400)
 
-@app.route('/remove/<int:user_id>')
+@app.route('/remove/<str:user_id>')
 def remove(user_id):
     print("now I start to remove file")
-    print("user key is" + str(user_id))
-    path = os.path.join('static/img/', str(user_id))
+    print("user key is" + user_id)
+    path = os.path.join('static/img/', user_id)
     shutil.rmtree(path)
 
 if __name__ == '__main__':
