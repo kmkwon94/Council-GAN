@@ -10,7 +10,7 @@
     {% endfor %}
     <script src="{{ url_for('static', filename='jquery-3.5.1.js') }}"></script>
     <script>
-      $.get('/remove' + user_key);
+      $.get('remove/' + user_key);
     
     </script>
   </body>
