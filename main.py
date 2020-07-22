@@ -89,6 +89,9 @@ def male_To_female():
 
         new_file_list = []
         print(file_list)
+        output_dir = file_list[0].replace('static/img/','')
+        output_dir = output_dir.replace('_out_0_0.jpg','')
+        print(output_dir)
         for i in file_list:
             new_file_list.append(i.replace('static/',''))
         print(new_file_list)
@@ -123,7 +126,7 @@ def remove(user_id):
     print("user key is" + user_id)
     path = os.path.join('static/img/', user_id)
     shutil.rmtree(path)
-
+    return Response("delete complete", status=200)
 if __name__ == '__main__':
     # server execute
     app.run(host='0.0.0.0', port=80, debug=True)
