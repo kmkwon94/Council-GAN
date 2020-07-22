@@ -69,6 +69,7 @@ def person_To_anime():
         #remove input folder
         if os.path.isdir(input_):
             shutil.rmtree(input_)
+            print("Delete input_folder is Succeed!")
         else:
             print(input_)
             print("There is nothing to Delete")
@@ -101,6 +102,7 @@ def male_To_female():
         #remove input folder
         if os.path.isdir(input_):
             shutil.rmtree(input_)
+            print("Delete input_folder is Succeed!")
         else:
             print(input_)
             print("There is nothing to Delete")
@@ -132,6 +134,7 @@ def no_glasses():
         #remove input folder
         if os.path.isdir(input_):
             shutil.rmtree(input_)
+            print("Delete input_folder is Succeed!")
         else:
             print(input_)
             print("There is nothing to Delete")
