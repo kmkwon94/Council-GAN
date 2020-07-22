@@ -164,15 +164,17 @@ def remove(user_id):
     except Exception as e:
         return Response("There is nothing to delete please Try again", status=400)
 
-@app.route('/removeInputDir/<input_dir>', methods=['GET', 'POST'])
-def removeInputDir(input_dir):
-    remove_input_dir = input_dir.strip().replace('//','/')
+@app.route('/removeInputDir/home/user/upload/<model_type>/<input_dir>', methods=['GET', 'POST'])
+def removeInputDir(model_type, input_dir):
+    remove_input_dir = '/home/user/upload/' + model_type + '/' + input_dir 
     print("now I start to remove input file")
     print("input dir is " + remove_input_dir)
     try:
         if os.path.isdir(remove_input_dir):
             shutil.rmtree(remove_input_dir)
-        return Response("Delete complete", status=200)
+            return Response("Delete complete", status=200)
+        else:
+            return Response("There is nothing to Delete", status=400)
     except Exception as e:
         return Response("There is nothing to delete please Try again", status=400)
 
