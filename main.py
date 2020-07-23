@@ -3,17 +3,98 @@ from flask import Flask, render_template, request, redirect, url_for, jsonify, R
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
 from test_on_folder import runImageTransfer
+from utils import get_config, get_data_loader_folder, pytorch03_to_pytorch04
+from trainer_council import Council_Trainer
+from torch import nn
+from scipy.stats import entropy
+import torch.nn.functional as F
+from torch.autograd import Variable
+from data import ImageFolder
+import numpy as np
+import torchvision.utils as vutils
+try:
+    from itertools import izip as zip
+except ImportError: # will be 3.x series
+    pass
+import torch
 import os 
 import random
 import string
 import uuid
 import shutil
+from tqdm import tqdm
 
 app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
 CORS(app)
 path = "./static"
 
+############################################################
+#preload model
+def loadModel(config, checkpoint, a2b):
+    seed = 1
+
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
+    # Load experiment setting
+    config = get_config(config)
+    input_dim = config['input_dim_a'] if a2b else config['input_dim_b']
+    council_size = config['council']['council_size']
+
+    style_dim = config['gen']['style_dim']
+    trainer = Council_Trainer(config)
+    only_one = False
+    if 'gen_' in checkpoint[-21:]:
+        state_dict = torch.load(checkpoint)
+        try:
+            print(state_dict)
+            if a2b:
+                trainer.gen_a2b_s[0].load_state_dict(state_dict['a2b'])
+            else:
+                trainer.gen_b2a_s[0].load_state_dict(state_dict['b2a'])
+        except:
+            print('a2b should be set to ' + str(not a2b) + ' , Or config file could be wrong')
+            a2b = not a2b
+            if a2b:
+                trainer.gen_a2b_s[0].load_state_dict(state_dict['a2b'])
+            else:
+                trainer.gen_b2a_s[0].load_state_dict(state_dict['b2a'])
+                
+        council_size = 1
+        only_one = True
+    else:
+        for i in range(council_size):
+            try:
+                if a2b:
+                    tmp_checkpoint = checkpoint[:-8] + 'a2b_gen_' + str(i) + '_' + checkpoint[-8:] + '.pt'
+                    state_dict = torch.load(tmp_checkpoint)
+                    trainer.gen_a2b_s[i].load_state_dict(state_dict['a2b'])
+                else:
+                    tmp_checkpoint = checkpoint[:-8] + 'b2a_gen_' + str(i) + '_' + checkpoint[-8:] + '.pt'
+                    state_dict = torch.load(tmp_checkpoint)
+                    trainer.gen_b2a_s[i].load_state_dict(state_dict['b2a'])
+            except:
+                print('a2b should be set to ' + str(not a2b) + ' , Or config file could be wrong')
+                
+                a2b = not a2b
+                if a2b:
+                    tmp_checkpoint = checkpoint[:-8] + 'a2b_gen_' + str(i) + '_' + checkpoint[-8:] + '.pt'
+                    state_dict = torch.load(tmp_checkpoint)
+                    trainer.gen_a2b_s[i].load_state_dict(state_dict['a2b'])
+                else:
+                    tmp_checkpoint = checkpoint[:-8] + 'b2a_gen_' + str(i) + '_' + checkpoint[-8:] + '.pt'
+                    state_dict = torch.load(tmp_checkpoint)
+                    trainer.gen_b2a_s[i].load_state_dict(state_dict['b2a'])
+
+    trainer.cuda()
+    trainer.eval()
+
+    return [trainer, config, council_size, style_dim]
+
+peson2anime_preloadModel = loadModel("pretrain/anime/256/anime2face_council_folder.yaml", "pretrain/anime/256/01000000", 0)
+male2female_preloadModel = loadModel("pretrain/m2f/256/male2female_council_folder.yaml", "pretrain/m2f/256/01000000", 1)
+noglasses_preloadModel = loadModel("pretrain/glasses_removal/128/glasses_council_folder.yaml", "pretrain/glasses_removal/128/01000000", 1)
+############################################################
 # 업로드 HTML 렌더링
 @app.route('/')
 def render_file():
@@ -58,12 +139,14 @@ def fileupload():
 def person_To_anime():
     try:
         input_dir = request.args.get('input_dir', '_unknown_')
-        modelType = "pretrain/anime/256/anime2face_council_folder.yaml"
+        #modelType = "pretrain/anime/256/anime2face_council_folder.yaml"
         #output = "static/person2anime"
-        checkpoint = "pretrain/anime/256/01000000"
+        #checkpoint = "pretrain/anime/256/01000000"
         input_ = "/home/user/upload/person2anime/" + input_dir
         a2b = 0
-        file_list = runImageTransfer(modelType,checkpoint,input_,a2b)
+
+        
+        file_list = runImageTransfer(peson2anime_preloadModel, input_, a2b)
         file_list.sort()
         '''
         #remove input folder
@@ -90,13 +173,13 @@ def person_To_anime():
 def male_To_female():
     try:
         input_dir = request.args.get('input_dir', '_unknown_')
-        modelType = "pretrain/m2f/256/male2female_council_folder.yaml"
+        #modelType = "pretrain/m2f/256/male2female_council_folder.yaml"
         #output = "static/male2female"
-        checkpoint = "pretrain/m2f/256/01000000"
+        #checkpoint = "pretrain/m2f/256/01000000"
         input_ = "/home/user/upload/male2female/" + input_dir
         a2b = 1
 
-        file_list = runImageTransfer(modelType,checkpoint,input_,a2b)
+        file_list = runImageTransfer(male2female_preloadModel, input_, a2b)
         file_list.sort()
         '''
         #remove input folder
@@ -123,12 +206,13 @@ def male_To_female():
 def no_glasses():
     try:
         input_dir = request.args.get('input_dir', '_unknown_')
-        modelType = "pretrain/glasses_removal/128/glasses_council_folder.yaml"
+        #modelType = "pretrain/glasses_removal/128/glasses_council_folder.yaml"
         #output = "static/no_glasses"
-        checkpoint = "pretrain/glasses_removal/128/01000000"
+        #checkpoint = "pretrain/glasses_removal/128/01000000"
         input_ = "/home/user/upload/no_glasses/" + input_dir
         a2b = 1
-        file_list = runImageTransfer(modelType,checkpoint,input_,a2b)    
+        
+        file_list = runImageTransfer(noglasses_preloadModel, input_, a2b)    
         file_list.sort()
         '''
         #remove input folder

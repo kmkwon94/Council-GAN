@@ -24,8 +24,13 @@ import uuid
 from tqdm import tqdm
 import time
 
-def runImageTransfer(config, checkpoint, input_folder, a2b):
-    start = time.time()
+def runImageTransfer(preload_model, input_folder, a2b):
+    #preload_model = [trainer, config, council_size, style_dim]
+    trainer = preload_model[0]
+    config = preload_model[1]
+    council_size = preload_model[2]
+    style_dim = preload_model[3]
+
     output_path = 'static'
     seed = 1
     num_style = 10
@@ -33,6 +38,7 @@ def runImageTransfer(config, checkpoint, input_folder, a2b):
     num_of_images_to_test = 10000
     data_name = 'out'
 
+    '''
     torch.manual_seed(seed)
     torch.cuda.manual_seed(seed)
     # Load experiment setting
@@ -40,6 +46,7 @@ def runImageTransfer(config, checkpoint, input_folder, a2b):
     input_dim = config['input_dim_a'] if a2b else config['input_dim_b']
     council_size = config['council']['council_size']
 
+    '''
 
     # Setup model and data loader
     image_names = ImageFolder(input_folder, transform=None, return_paths=True)
@@ -49,7 +56,7 @@ def runImageTransfer(config, checkpoint, input_folder, a2b):
     data_loader = get_data_loader_folder(input_folder, 1, False,\
                                         new_size=config['new_size_a'] if 'new_size_a' in config.keys() else config['new_size'],\
                                         crop=False, config=config, is_data_A=is_data_A)
-
+    '''
     style_dim = config['gen']['style_dim']
     trainer = Council_Trainer(config)
     only_one = False
@@ -99,8 +106,7 @@ def runImageTransfer(config, checkpoint, input_folder, a2b):
 
     trainer.cuda()
     trainer.eval()
-
-    print(time.time()-start)
+    '''
 
     encode_s = []
     decode_s = []
