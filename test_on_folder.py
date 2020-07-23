@@ -22,8 +22,10 @@ import os
 import shutil
 import uuid
 from tqdm import tqdm
+import time
 
 def runImageTransfer(config, checkpoint, input_folder, a2b):
+    start = time.time()
     output_path = 'static'
     seed = 1
     num_style = 10
@@ -97,6 +99,8 @@ def runImageTransfer(config, checkpoint, input_folder, a2b):
 
     trainer.cuda()
     trainer.eval()
+
+    print(time.time()-start)
 
     encode_s = []
     decode_s = []
