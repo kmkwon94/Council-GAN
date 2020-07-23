@@ -139,32 +139,19 @@ def fileupload():
 def person_To_anime():
     try:
         input_dir = request.args.get('input_dir', '_unknown_')
-        #modelType = "pretrain/anime/256/anime2face_council_folder.yaml"
-        #output = "static/person2anime"
-        #checkpoint = "pretrain/anime/256/01000000"
         input_ = "/home/user/upload/person2anime/" + input_dir
         a2b = 0
 
-        
         file_list = runImageTransfer(peson2anime_preloadModel, input_, a2b)
         file_list.sort()
-        '''
-        #remove input folder
-        if os.path.isdir(input_):
-            shutil.rmtree(input_)
-            print("Delete input_folder is Succeed!")
-        else:
-            print(input_)
-            print("There is nothing to Delete")
-        '''
-        new_file_list = []
-        print(file_list)
+        
+
         output_dir = file_list[0].replace('static/img/','')
         output_dir = output_dir.replace('/_out_0_0.jpg','').strip()
-        print(output_dir)
+        
+        new_file_list = []
         for i in file_list:
             new_file_list.append(i.replace('static/',''))
-        print(new_file_list)
         return render_template('showImage.html', image_names = new_file_list, user_output_key = output_dir, user_input_dir = input_)
     except Exception as e:
         return Response("person2anime is fail", status=400)    
@@ -173,28 +160,16 @@ def person_To_anime():
 def male_To_female():
     try:
         input_dir = request.args.get('input_dir', '_unknown_')
-        #modelType = "pretrain/m2f/256/male2female_council_folder.yaml"
-        #output = "static/male2female"
-        #checkpoint = "pretrain/m2f/256/01000000"
         input_ = "/home/user/upload/male2female/" + input_dir
         a2b = 1
 
         file_list = runImageTransfer(male2female_preloadModel, input_, a2b)
         file_list.sort()
-        '''
-        #remove input folder
-        if os.path.isdir(input_):
-            shutil.rmtree(input_)
-            print("Delete input_folder is Succeed!")
-        else:
-            print(input_)
-            print("There is nothing to Delete")
-        '''
-        new_file_list = []
-        print(file_list)
+
         output_dir = file_list[0].replace('static/img/','')
         output_dir = output_dir.replace('/_out_0_0.jpg','').strip()
-        print(output_dir)
+
+        new_file_list = []
         for i in file_list:
             new_file_list.append(i.replace('static/',''))
         print(new_file_list)
@@ -206,28 +181,16 @@ def male_To_female():
 def no_glasses():
     try:
         input_dir = request.args.get('input_dir', '_unknown_')
-        #modelType = "pretrain/glasses_removal/128/glasses_council_folder.yaml"
-        #output = "static/no_glasses"
-        #checkpoint = "pretrain/glasses_removal/128/01000000"
         input_ = "/home/user/upload/no_glasses/" + input_dir
         a2b = 1
         
         file_list = runImageTransfer(noglasses_preloadModel, input_, a2b)    
         file_list.sort()
-        '''
-        #remove input folder
-        if os.path.isdir(input_):
-            shutil.rmtree(input_)
-            print("Delete input_folder is Succeed!")
-        else:
-            print(input_)
-            print("There is nothing to Delete")
-        '''
-        new_file_list = []
-        print(file_list)
+       
         output_dir = file_list[0].replace('static/img/','')
         output_dir = output_dir.replace('/_out_0_0.jpg','').strip()
-        print(output_dir)
+        
+        new_file_list = []
         for i in file_list:
             new_file_list.append(i.replace('static/',''))
         print(new_file_list)

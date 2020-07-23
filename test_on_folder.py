@@ -33,20 +33,8 @@ def runImageTransfer(preload_model, input_folder, a2b):
 
     output_path = 'static'
     seed = 1
-    num_style = 10
-    output_only = True
     num_of_images_to_test = 10000
-    data_name = 'out'
 
-    '''
-    torch.manual_seed(seed)
-    torch.cuda.manual_seed(seed)
-    # Load experiment setting
-    config = get_config(config)
-    input_dim = config['input_dim_a'] if a2b else config['input_dim_b']
-    council_size = config['council']['council_size']
-
-    '''
 
     # Setup model and data loader
     image_names = ImageFolder(input_folder, transform=None, return_paths=True)
@@ -56,58 +44,7 @@ def runImageTransfer(preload_model, input_folder, a2b):
     data_loader = get_data_loader_folder(input_folder, 1, False,\
                                         new_size=config['new_size_a'] if 'new_size_a' in config.keys() else config['new_size'],\
                                         crop=False, config=config, is_data_A=is_data_A)
-    '''
-    style_dim = config['gen']['style_dim']
-    trainer = Council_Trainer(config)
-    only_one = False
-    if 'gen_' in checkpoint[-21:]:
-        state_dict = torch.load(checkpoint)
-        try:
-            print(state_dict)
-            if a2b:
-                trainer.gen_a2b_s[0].load_state_dict(state_dict['a2b'])
-            else:
-                trainer.gen_b2a_s[0].load_state_dict(state_dict['b2a'])
-        except:
-            print('a2b should be set to ' + str(not a2b) + ' , Or config file could be wrong')
-            a2b = not a2b
-            if a2b:
-                trainer.gen_a2b_s[0].load_state_dict(state_dict['a2b'])
-            else:
-                trainer.gen_b2a_s[0].load_state_dict(state_dict['b2a'])
-                
-        council_size = 1
-        only_one = True
-    else:
-        for i in range(council_size):
-            try:
-                if a2b:
-                    tmp_checkpoint = checkpoint[:-8] + 'a2b_gen_' + str(i) + '_' + checkpoint[-8:] + '.pt'
-                    state_dict = torch.load(tmp_checkpoint)
-                    trainer.gen_a2b_s[i].load_state_dict(state_dict['a2b'])
-                else:
-                    tmp_checkpoint = checkpoint[:-8] + 'b2a_gen_' + str(i) + '_' + checkpoint[-8:] + '.pt'
-                    state_dict = torch.load(tmp_checkpoint)
-                    trainer.gen_b2a_s[i].load_state_dict(state_dict['b2a'])
-            except:
-                print('a2b should be set to ' + str(not a2b) + ' , Or config file could be wrong')
-                
-                a2b = not a2b
-                if a2b:
-                    tmp_checkpoint = checkpoint[:-8] + 'a2b_gen_' + str(i) + '_' + checkpoint[-8:] + '.pt'
-                    state_dict = torch.load(tmp_checkpoint)
-                    trainer.gen_a2b_s[i].load_state_dict(state_dict['a2b'])
-                else:
-                    tmp_checkpoint = checkpoint[:-8] + 'b2a_gen_' + str(i) + '_' + checkpoint[-8:] + '.pt'
-                    state_dict = torch.load(tmp_checkpoint)
-                    trainer.gen_b2a_s[i].load_state_dict(state_dict['b2a'])
-                
-
-
-    trainer.cuda()
-    trainer.eval()
-    '''
-
+  
     encode_s = []
     decode_s = []
     if a2b:
@@ -153,8 +90,6 @@ def runImageTransfer(preload_model, input_folder, a2b):
             do_all_in_one = True
             if do_all_in_one:
                 if not os.path.exists(os.path.dirname(path_all_in_one)):
-                    print("haha start working")
-                    print(path_all_in_one)
                     os.makedirs(os.path.dirname(path_all_in_one))
             vutils.save_image(outputs.data, path_all_in_one, padding=0, normalize=True)
     return file_list
