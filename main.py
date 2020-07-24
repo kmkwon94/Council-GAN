@@ -261,4 +261,4 @@ def removeInputDir(model_type, input_dir):
 
 if __name__ == '__main__':
     # server execute
-    app.run(host='0.0.0.0', port=80, debug=True, threading=True)
+    app.run(host='0.0.0.0', port=80, debug=True)
