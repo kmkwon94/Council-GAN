@@ -109,12 +109,9 @@ def handle_requests_by_batch():
         requests_batch = []
         while not (len(requests_batch) >= BATCH_SIZE): #BATCH_SIZE 보다 작을때만 돈다 
             try:
-                print("is it running well 0")
                 #request_queue에 있는 내용물들을 꺼내서 requests_batch에 담는다.
                 requests_batch.append(requests_queue.get(timeout=CHECK_INTERVAL))
-                print("is it running well 1")
             except Empty:
-                print("is it running well 2")
                 continue
 
 threading.Thread(target=handle_requests_by_batch).start()
