@@ -132,7 +132,7 @@ def fileupload():
     f = request.files['file']
 
     if requests_queue.qsize() >= BATCH_SIZE:
-        return jsonify({"error":'Too Many Request'}), 429
+        return Response("Too many requests plese try again later", status=429)
     req = {
         'input': [check_value, f]
     }
@@ -180,6 +180,7 @@ def person_To_anime():
             new_file_list.append(i.replace('static/',''))
         return render_template('showImage.html', image_names = new_file_list, user_output_key = output_dir, user_input_dir = input_)
     except Exception as e:
+        prinet(e)
         return Response("person2anime is fail", status=400)    
 
 @app.route('/male2female', methods=['GET', 'POST'])
@@ -201,6 +202,7 @@ def male_To_female():
         print(new_file_list)
         return render_template('showImage.html', image_names = new_file_list, user_output_key = output_dir, user_input_dir = input_)
     except Exception as e:
+        print(e)
         return Response("male2female is fail", status=400)
    
 @app.route('/noglasses', methods=['GET', 'POST'])
@@ -222,6 +224,7 @@ def no_glasses():
         print(new_file_list)
         return render_template('showImage.html', image_names = new_file_list, user_output_key = output_dir, user_input_dir = input_)
     except Exception as e:
+        print(e)
         return Response("no_glasses is fail", status=400)
 
 @app.route('/remove/<user_id>', methods=['GET', 'POST'])
