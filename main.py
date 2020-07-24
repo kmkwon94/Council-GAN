@@ -22,6 +22,8 @@ import random
 import string
 import uuid
 import shutil
+from queue import Queue, Empty
+import threading
 from tqdm import tqdm
 
 app = Flask(__name__)
@@ -95,6 +97,24 @@ peson2anime_preloadModel = loadModel("pretrain/anime/256/anime2face_council_fold
 male2female_preloadModel = loadModel("pretrain/m2f/256/male2female_council_folder.yaml", "pretrain/m2f/256/01000000", 1)
 noglasses_preloadModel = loadModel("pretrain/glasses_removal/128/glasses_council_folder.yaml", "pretrain/glasses_removal/128/01000000", 1)
 ############################################################
+
+#handling over request by status code 429
+requests_queue = Queue()
+BATCH_SIZE = 3
+CHECK_INTERVAL = 0.1
+
+def handle_requests_by_batch():
+    while True:
+        #BATCH_SIZE보다 크면 안에 있는 루프를 빠져나와서 requests_batch를 초기화한다.
+        requests_batch = []
+        while not (len(requests_batch) >= BATCH_SIZE): #BATCH_SIZE 보다 작을때만 돈다 
+            try:
+                #request_queue에 있는 내용물들을 꺼내서 requests_batch에 담는다.
+                requests_batch.append(requests_queue.get(timeout=CHECK_INTERVAL))
+            except Empty:
+                continue
+threading.Thread(target=handle_requests_by_batch).start()
+
 # 업로드 HTML 렌더링
 @app.route('/')
 def render_file():
@@ -106,33 +126,40 @@ def healthz():
 
 @app.route('/fileUpload', methods=['GET', 'POST'])
 def fileupload():
+    #내가 전달 받는 request는 'file'과 'check_model'
 
     check_value = request.form['check_model']
-    
-    if request.method == 'POST':
-        try:
-            f = request.files['file']
-            # 저장할 경로 + 파일명
-            # redirect할 것을 method명으로 처리함
-            #randomDirName = str(uuid.uuid4()) #사용자끼리의 업로드한 이미지가 겹치지 않게끔 uuid를 이용하여 사용자를 구분하는 디렉터리를 만든다.
-            randomDirName = str(uuid.uuid4())
-            if check_value == "ani":
-                os.mkdir('/home/user/upload/person2anime/' + randomDirName)
-                f.save('/home/user/upload/person2anime/' + randomDirName +'/' +
-                secure_filename(f.filename))
-                return redirect(url_for('person_To_anime', input_dir = randomDirName))
-            elif check_value == "m2f":
-                os.mkdir('/home/user/upload/male2female/' + randomDirName)
-                f.save('/home/user/upload/male2female/' + randomDirName +'/' +
-                secure_filename(f.filename))
-                return redirect(url_for('male_To_female', input_dir = randomDirName))
-            else:
-                os.mkdir('/home/user/upload/no_glasses/' + randomDirName)
-                f.save('/home/user/upload/no_glasses/' + randomDirName +'/' +
-                secure_filename(f.filename))
-                return redirect(url_for('no_glasses', input_dir = randomDirName))
-        except Exception as e:
-            return Response("upload file and load model is fail", status=400)
+    f = request.files['file']
+
+    if requests_queue.qsize() >= BATCH_SIZE:
+        return jsonify({"error":'Too Many Request'}), 429
+    req = {
+        'input': [check_value, f]
+    }
+    requests_queue.put(req)
+
+    try:
+        # 저장할 경로 + 파일명
+        # redirect할 것을 method명으로 처리함
+        #randomDirName = str(uuid.uuid4()) #사용자끼리의 업로드한 이미지가 겹치지 않게끔 uuid를 이용하여 사용자를 구분하는 디렉터리를 만든다.
+        randomDirName = str(uuid.uuid4())
+        if check_value == "ani":
+            os.mkdir('/home/user/upload/person2anime/' + randomDirName)
+            f.save('/home/user/upload/person2anime/' + randomDirName +'/' +
+            secure_filename(f.filename))
+            return redirect(url_for('person_To_anime', input_dir = randomDirName))
+        elif check_value == "m2f":
+            os.mkdir('/home/user/upload/male2female/' + randomDirName)
+            f.save('/home/user/upload/male2female/' + randomDirName +'/' +
+            secure_filename(f.filename))
+            return redirect(url_for('male_To_female', input_dir = randomDirName))
+        else:
+            os.mkdir('/home/user/upload/no_glasses/' + randomDirName)
+            f.save('/home/user/upload/no_glasses/' + randomDirName +'/' +
+            secure_filename(f.filename))
+            return redirect(url_for('no_glasses', input_dir = randomDirName))
+    except Exception as e:
+        return Response("upload file and load model is fail", status=400)
 
 #사용자의 입력을 받아서 각 원하는 결과물을 라우팅
 @app.route('/person2anime', methods=['GET', 'POST'])
@@ -145,7 +172,6 @@ def person_To_anime():
         file_list = runImageTransfer(peson2anime_preloadModel, input_, a2b)
         file_list.sort()
         
-
         output_dir = file_list[0].replace('static/img/','')
         output_dir = output_dir.replace('/_out_0_0.jpg','').strip()
         
