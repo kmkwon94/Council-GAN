@@ -109,10 +109,14 @@ def handle_requests_by_batch():
         requests_batch = []
         while not (len(requests_batch) >= BATCH_SIZE): #BATCH_SIZE 보다 작을때만 돈다 
             try:
+                print("is it running well 0")
                 #request_queue에 있는 내용물들을 꺼내서 requests_batch에 담는다.
                 requests_batch.append(requests_queue.get(timeout=CHECK_INTERVAL))
+                print("is it running well 1")
             except Empty:
+                print("is it running well 2")
                 continue
+
 threading.Thread(target=handle_requests_by_batch).start()
 
 # 업로드 HTML 렌더링
@@ -159,6 +163,7 @@ def fileupload():
             secure_filename(f.filename))
             return redirect(url_for('no_glasses', input_dir = randomDirName))
     except Exception as e:
+        print(e)
         return Response("upload file and load model is fail", status=400)
 
 #사용자의 입력을 받아서 각 원하는 결과물을 라우팅
@@ -180,7 +185,7 @@ def person_To_anime():
             new_file_list.append(i.replace('static/',''))
         return render_template('showImage.html', image_names = new_file_list, user_output_key = output_dir, user_input_dir = input_)
     except Exception as e:
-        prinet(e)
+        print(e)
         return Response("person2anime is fail", status=400)    
 
 @app.route('/male2female', methods=['GET', 'POST'])
@@ -256,4 +261,4 @@ def removeInputDir(model_type, input_dir):
 
 if __name__ == '__main__':
     # server execute
-    app.run(host='0.0.0.0', port=80, debug=True)
+    app.run(host='0.0.0.0', port=80, debug=True, threading=True)
