@@ -157,7 +157,7 @@ def fileupload():
             os.mkdir('/home/user/upload/person2anime/' + randomDirName)
             f.save('/home/user/upload/person2anime/' + randomDirName +'/' +
             secure_filename(f.filename))
-            person_To_anime(randomDirName)
+            return person_To_anime(randomDirName)
             #return redirect(url_for('person_To_anime', input_dir = randomDirName))
         elif check_value == "m2f":
             os.mkdir('/home/user/upload/male2female/' + randomDirName)
