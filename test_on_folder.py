@@ -24,7 +24,7 @@ import uuid
 from tqdm import tqdm
 import time
 
-def runImageTransfer(preload_model, input_folder, a2b):
+def runImageTransfer(preload_model, input_folder, user_key, a2b):
     #preload_model = [trainer, config, council_size, style_dim]
     trainer = preload_model[0]
     config = preload_model[1]
@@ -59,7 +59,6 @@ def runImageTransfer(preload_model, input_folder, a2b):
 
     # creat testing images
     file_list= [] 
-    user_id = str(uuid.uuid4()) #user마다 output 디렉터리를 따로 만들어주기 위해 uuid 사용
     seed = 1
     curr_image_num = -1
     for i, (images, names) in tqdm(enumerate(zip(data_loader, image_names)), total=num_of_images_to_test):
@@ -85,7 +84,7 @@ def runImageTransfer(preload_model, input_folder, a2b):
             basename = os.path.basename(names[1])
             output_folder = os.path.join(output_path, 'img') #output_folder = static/img
                 
-            path_all_in_one = os.path.join(output_folder, user_id , '_out_' + str(curr_image_num) + '_' + str(j) + '.jpg')
+            path_all_in_one = os.path.join(output_folder, user_key , '_out_' + str(curr_image_num) + '_' + str(j) + '.jpg')
             file_list.append(path_all_in_one)
             do_all_in_one = True
             if do_all_in_one:

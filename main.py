@@ -171,7 +171,7 @@ def person_To_anime():
         input_ = "/home/user/upload/person2anime/" + input_dir
         a2b = 0
 
-        file_list = runImageTransfer(peson2anime_preloadModel, input_, a2b)
+        file_list = runImageTransfer(peson2anime_preloadModel, input_, input_dir, a2b)
         file_list.sort()
         
         output_dir = file_list[0].replace('static/img/','')
@@ -180,7 +180,7 @@ def person_To_anime():
         new_file_list = []
         for i in file_list:
             new_file_list.append(i.replace('static/',''))
-        return render_template('showImage.html', image_names = new_file_list, user_output_key = output_dir, user_input_dir = input_)
+        return render_template('showImage.html', image_names = new_file_list, user_key = output_dir, user_input_dir = input_)
     except Exception as e:
         print(e)
         return Response("person2anime is fail", status=400)    
@@ -192,7 +192,7 @@ def male_To_female():
         input_ = "/home/user/upload/male2female/" + input_dir
         a2b = 1
 
-        file_list = runImageTransfer(male2female_preloadModel, input_, a2b)
+        file_list = runImageTransfer(male2female_preloadModel, input_, input_dir, a2b)
         file_list.sort()
 
         output_dir = file_list[0].replace('static/img/','')
@@ -202,7 +202,7 @@ def male_To_female():
         for i in file_list:
             new_file_list.append(i.replace('static/',''))
         print(new_file_list)
-        return render_template('showImage.html', image_names = new_file_list, user_output_key = output_dir, user_input_dir = input_)
+        return render_template('showImage.html', image_names = new_file_list, user_key = output_dir, user_input_dir = input_)
     except Exception as e:
         print(e)
         return Response("male2female is fail", status=400)
@@ -214,7 +214,7 @@ def no_glasses():
         input_ = "/home/user/upload/no_glasses/" + input_dir
         a2b = 1
         
-        file_list = runImageTransfer(noglasses_preloadModel, input_, a2b)    
+        file_list = runImageTransfer(noglasses_preloadModel, input_, input_dir, a2b)    
         file_list.sort()
        
         output_dir = file_list[0].replace('static/img/','')
@@ -224,7 +224,7 @@ def no_glasses():
         for i in file_list:
             new_file_list.append(i.replace('static/',''))
         print(new_file_list)
-        return render_template('showImage.html', image_names = new_file_list, user_output_key = output_dir, user_input_dir = input_)
+        return render_template('showImage.html', image_names = new_file_list, user_key = output_dir, user_input_dir = input_)
     except Exception as e:
         print(e)
         return Response("no_glasses is fail", status=400)
