@@ -216,7 +216,7 @@ def person_To_anime(randomDirName):
         print(e)
         return Response("person2anime is fail", status=400)    
 
-@app.route('/male2female', methods=['GET', 'POST'])
+#@app.route('/male2female', methods=['GET', 'POST'])
 def male_To_female(randomDirName):
     try:
         #input_dir = request.args.get('input_dir', '_unknown_')
@@ -243,7 +243,7 @@ def male_To_female(randomDirName):
         print(e)
         return Response("male2female is fail", status=400)
    
-@app.route('/noglasses', methods=['GET', 'POST'])
+#@app.route('/noglasses', methods=['GET', 'POST'])
 def no_glasses(randomDirName):
     try:
         #input_dir = request.args.get('input_dir', '_unknown_')
