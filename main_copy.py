@@ -163,12 +163,14 @@ def fileupload():
             os.mkdir('/home/user/upload/male2female/' + randomDirName)
             f.save('/home/user/upload/male2female/' + randomDirName +'/' +
             secure_filename(f.filename))
-            return redirect(url_for('male_To_female', input_dir = randomDirName))
+            return male_To_female(randomDirName)
+            #return redirect(url_for('male_To_female', input_dir = randomDirName))
         else:
             os.mkdir('/home/user/upload/no_glasses/' + randomDirName)
             f.save('/home/user/upload/no_glasses/' + randomDirName +'/' +
             secure_filename(f.filename))
-            return redirect(url_for('no_glasses', input_dir = randomDirName))
+            return no_glasses(randomDirName)
+            #return redirect(url_for('no_glasses', input_dir = randomDirName))
     except Exception as e:
         print(e)
         return Response("upload file and load model is fail", status=400)
@@ -215,9 +217,10 @@ def person_To_anime(randomDirName):
         return Response("person2anime is fail", status=400)    
 
 @app.route('/male2female', methods=['GET', 'POST'])
-def male_To_female():
+def male_To_female(randomDirName):
     try:
-        input_dir = request.args.get('input_dir', '_unknown_')
+        #input_dir = request.args.get('input_dir', '_unknown_')
+        input_dir = randomDirName
         input_ = "/home/user/upload/male2female/" + input_dir
         a2b = 1
         global model_type
@@ -241,9 +244,10 @@ def male_To_female():
         return Response("male2female is fail", status=400)
    
 @app.route('/noglasses', methods=['GET', 'POST'])
-def no_glasses():
+def no_glasses(randomDirName):
     try:
-        input_dir = request.args.get('input_dir', '_unknown_')
+        #input_dir = request.args.get('input_dir', '_unknown_')
+        input_dir = randomDirName
         input_ = "/home/user/upload/no_glasses/" + input_dir
         a2b = 1
         global model_type
@@ -266,7 +270,7 @@ def no_glasses():
         print(e)
         return Response("no_glasses is fail", status=400)
 
-
+'''
 @app.after_response
 def remove():
     remove_id = remember_user_key.strip()
@@ -291,6 +295,7 @@ def remove():
             return print("Delete" + remove_input_dir + " is completed")
     except Exception as e:
         return print("Delete" + remove_input_dir + " is failed")
+'''
 '''
 #@app.route('/removeInputDir/home/user/upload/<model_type>/<input_dir>', methods=['GET', 'POST'])
 @app.after_response
