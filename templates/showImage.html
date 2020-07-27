@@ -4,16 +4,11 @@
   </head>
   <body>
     {{image_names}}
-    <div id = user_key>
-      {{user_key}}
-    </div>
-    <div id = user_input_dir>
-      {{user_input_dir}}
-    </div>
     {% for image_name in image_names %}
     <img src="{{ url_for('static', filename=image_name)}}">
   
     {% endfor %}
+    <!--
     <script src="{{ url_for('static', filename='js/jquery-3.5.1.js') }}"></script>
     <script>
       var user_key = document.getElementById("user_key").innerHTML
@@ -27,5 +22,6 @@
       setTimeout(timer,1500)
       clearTimeout(timer);
     </script>
+    -->
   </body>
 </html>
