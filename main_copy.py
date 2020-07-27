@@ -133,7 +133,7 @@ def render_file():
 def healthz():
     return "", 200
 
-@app.route('/fileUpload', methods=['POST'])
+@app.route('/fileUpload', methods=['GET','POST'])
 def fileupload():
     #내가 전달 받는 request는 'file'과 'check_model'
 
@@ -146,12 +146,13 @@ def fileupload():
         'input': [check_value, f]
     }
     requests_queue.put(req)
-
+    print("here1")
     try:
         # 저장할 경로 + 파일명
         # redirect할 것을 method명으로 처리함
         #randomDirName = str(uuid.uuid4()) #사용자끼리의 업로드한 이미지가 겹치지 않게끔 uuid를 이용하여 사용자를 구분하는 디렉터리를 만든다.
         randomDirName = str(uuid.uuid4())
+        print("here2")
         if check_value == "ani":
             os.mkdir('/home/user/upload/person2anime/' + randomDirName)
             f.save('/home/user/upload/person2anime/' + randomDirName +'/' +
