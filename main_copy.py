@@ -31,7 +31,7 @@ from tqdm import tqdm
 #import io
 from after_response import AfterResponse, AfterResponseMiddleware
 
-app = Flask(__name__, "after_response")
+app = Flask("after_response")
 
 app.config['JSON_AS_ASCII'] = False
 AfterResponse(app)
@@ -156,33 +156,39 @@ def fileupload():
             os.mkdir('/home/user/upload/person2anime/' + randomDirName)
             f.save('/home/user/upload/person2anime/' + randomDirName +'/' +
             secure_filename(f.filename))
+            person_To_anime(randomDirName)
             #return redirect(url_for('person_To_anime', input_dir = randomDirName))
         elif check_value == "m2f":
             os.mkdir('/home/user/upload/male2female/' + randomDirName)
             f.save('/home/user/upload/male2female/' + randomDirName +'/' +
             secure_filename(f.filename))
-            #return redirect(url_for('male_To_female', input_dir = randomDirName))
+            return redirect(url_for('male_To_female', input_dir = randomDirName))
         else:
             os.mkdir('/home/user/upload/no_glasses/' + randomDirName)
             f.save('/home/user/upload/no_glasses/' + randomDirName +'/' +
             secure_filename(f.filename))
-            #return redirect(url_for('no_glasses', input_dir = randomDirName))
+            return redirect(url_for('no_glasses', input_dir = randomDirName))
     except Exception as e:
         print(e)
         return Response("upload file and load model is fail", status=400)
 
 #사용자의 입력을 받아서 각 원하는 결과물을 라우팅
-@app.route('/person2anime', methods=['GET', 'POST'])
-def person_To_anime():
+#@app.route('/person2anime', methods=['GET', 'POST'])
+def person_To_anime(randomDirName):
     try:
-        input_dir = request.args.get('input_dir', '_unknown_')
+        #input_dir = request.args.get('input_dir', '_unknown_')
+        input_dir = randomDirName
         input_ = "/home/user/upload/person2anime/" + input_dir
         a2b = 0
         global model_type
         global remember_user_key
         model_type = 'person2anime'
         remember_user_key = input_dir
-        
+        print(input_dir)
+        print(input_)
+        print(model_type)
+        print(remember_user_key)
+
         file_list = runImageTransfer(peson2anime_preloadModel, input_, input_dir, a2b)
         file_list.sort()
         
