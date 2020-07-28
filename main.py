@@ -198,7 +198,7 @@ def person_To_anime(randomDirName):
         return render_template('showImage.html', rawimg=byte_image_list)
     except Exception as e:
         print(e)
-        return Response("person2anime is fail", status=400)    
+        return Response(f"person2anime is fail {e}", status=400)    
 
 def male_To_female(randomDirName):
     try:
