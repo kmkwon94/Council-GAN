@@ -138,7 +138,7 @@ def fileupload():
         return Response("error : Too many requests", status=429)
     
     try:
-        #randomDirName = str(uuid.uuid4()) #사용자끼리의 업로드한 이미지가 겹치지 않게끔 uuid를 이용하여 사용자를 구분하는 디렉터리를 만든다.
+        randomDirName = str(uuid.uuid4()) #사용자끼리의 업로드한 이미지가 겹치지 않게끔 uuid를 이용하여 사용자를 구분하는 디렉터리를 만든다.
         baseDir = '/home/user/upload'
         targetList = {
             "ani" : {
@@ -154,7 +154,6 @@ def fileupload():
                 "function" : no_glasses
             }
         }
-        randomDirName = str(uuid.uuid4())
         target = targetList[check_value]
         targetDir = baseDir + target['dir'] + randomDirName
         targetFunction = target["function"]
@@ -325,4 +324,4 @@ def remove(user_key, model_type):
 
 if __name__ == '__main__':
     # server execute
-    app.run(host='0.0.0.0', port=80, debug=True)
+    app.run(host='0.0.0.0', port=80)
