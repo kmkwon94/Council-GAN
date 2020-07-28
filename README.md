@@ -1,5 +1,15 @@
+# Ainize
+You can run Council-GAN easily on Ainize.
+
+Just Click this button!
+
+[![Run on Ainize](https://ainize.ai/static/images/run_on_ainize_button.svg)](https://ainize.web.app/redirect?git_repo=github.com/kmkwon94/Council-GAN.git)
+
+![ainize_example_img](/images/ainize_img.jpg) 
+
 # Council-GAN
 Implementation of our paper Breaking the Cycle - Colleagues are all you need (CVPR 2020)
+
 ### Paper
 [Ori Nizan](https://onr.github.io/) , [Ayellet Tal](http://webee.technion.ac.il/~ayellet/),
 **[Breaking the Cycle - Colleagues are all you need](http://openaccess.thecvf.com/content_CVPR_2020/html/Nizan_Breaking_the_Cycle_-_Colleagues_Are_All_You_Need_CVPR_2020_paper.html "Breaking the cycle -- Colleagues are all you need")**
