@@ -136,8 +136,8 @@ def fileupload():
     check_value = request.form['check_model']
     f = request.files['file']
 
-    if requests_queue.qsize() >= BATCH_SIZE:
-        return Response("Too many requests plese try again later", status=429)
+    if requests_queue.qsize() >= BATCH_SIZE: return Response("Too many requests plese try again later", status=429)
+    
     req = {
         'input': [check_value, f]
     }
@@ -173,8 +173,8 @@ def person_To_anime(randomDirName):
         a2b = 0
         model_type = 'person2anime'
         
-        file_list = []
         file_list = runImageTransfer(peson2anime_preloadModel, input_, user_key, a2b)
+        print(file_list)
         file_list.sort()
         
         byte_image_list = [] #byte_image를 담기위한 list
@@ -208,8 +208,8 @@ def male_To_female(randomDirName):
         a2b = 0
         model_type = 'male2female'
         
-        file_list = []
         file_list = runImageTransfer(male2female_preloadModel, input_, user_key, a2b)
+        print(file_list)
         file_list.sort()
         
         byte_image_list = [] #byte_image를 담기위한 list
@@ -244,8 +244,8 @@ def no_glasses(randomDirName):
         a2b = 0
         model_type = 'no_glasses'
         
-        file_list = []
         file_list = runImageTransfer(noglasses_preloadModel, input_, user_key, a2b)
+        print(file_list)
         file_list.sort()
         
         byte_image_list = [] #byte_image를 담기위한 list
