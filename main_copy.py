@@ -173,6 +173,7 @@ def person_To_anime(randomDirName):
         a2b = 0
         model_type = 'person2anime'
         
+        file_list = []
         file_list = runImageTransfer(peson2anime_preloadModel, input_, user_key, a2b)
         file_list.sort()
         
