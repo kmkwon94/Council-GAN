@@ -3,25 +3,8 @@
   <head>
   </head>
   <body>
-    {{image_names}}
     {% for img in rawimg %}
     <img src="data:image/jpg;base64,{{ img|safe }}">
-  
     {% endfor %}
-    <!--
-    <script src="{{ url_for('static', filename='js/jquery-3.5.1.js') }}"></script>
-    <script>
-      var user_key = document.getElementById("user_key").innerHTML
-      var user_input_dir = document.getElementById("user_input_dir").innerHTML
-      user_input_dir = user_input_dir.trim()
-      user_input_dir = user_input_dir.replace("//","/")
-      function timer(){
-        $.get('remove/' + user_key);
-        $.get('removeInputDir' + user_input_dir);
-      }
-      setTimeout(timer,1500)
-      clearTimeout(timer);
-    </script>
-    <-->
   </body>
 </html>

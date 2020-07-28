@@ -108,8 +108,6 @@ noglasses_preloadModel = loadModel("pretrain/glasses_removal/128/glasses_council
 requests_queue = Queue()
 BATCH_SIZE = 3
 CHECK_INTERVAL = 0.1
-remember_user_key = ''
-model_type = ''
 def handle_requests_by_batch():
     while True:
         #BATCH_SIZE보다 크면 안에 있는 루프를 빠져나와서 requests_batch를 초기화한다.
@@ -130,12 +128,11 @@ def render_file():
 
 @app.route('/healthz', methods=['GET'])
 def healthz():
-    return "", 200
+    return "I am alive", 200
 
 @app.route('/fileUpload', methods=['GET','POST'])
 def fileupload():
     #내가 전달 받는 request는 'file'과 'check_model'
-
     check_value = request.form['check_model']
     f = request.files['file']
 
@@ -145,57 +142,45 @@ def fileupload():
         'input': [check_value, f]
     }
     requests_queue.put(req)
-    print("here1")
+
     try:
-        # 저장할 경로 + 파일명
-        # redirect할 것을 method명으로 처리함
         #randomDirName = str(uuid.uuid4()) #사용자끼리의 업로드한 이미지가 겹치지 않게끔 uuid를 이용하여 사용자를 구분하는 디렉터리를 만든다.
         randomDirName = str(uuid.uuid4())
-        print("here2")
         if check_value == "ani":
             os.mkdir('/home/user/upload/person2anime/' + randomDirName)
             f.save('/home/user/upload/person2anime/' + randomDirName +'/' +
             secure_filename(f.filename))
             return person_To_anime(randomDirName)
-            #return redirect(url_for('person_To_anime', input_dir = randomDirName))
         elif check_value == "m2f":
             os.mkdir('/home/user/upload/male2female/' + randomDirName)
             f.save('/home/user/upload/male2female/' + randomDirName +'/' +
             secure_filename(f.filename))
             return male_To_female(randomDirName)
-            #return redirect(url_for('male_To_female', input_dir = randomDirName))
         else:
             os.mkdir('/home/user/upload/no_glasses/' + randomDirName)
             f.save('/home/user/upload/no_glasses/' + randomDirName +'/' +
             secure_filename(f.filename))
             return no_glasses(randomDirName)
-            #return redirect(url_for('no_glasses', input_dir = randomDirName))
     except Exception as e:
         print(e)
         return Response("upload file and load model is fail", status=400)
 
 #사용자의 입력을 받아서 각 원하는 결과물을 라우팅
-#@app.route('/person2anime', methods=['GET', 'POST'])
 def person_To_anime(randomDirName):
     try:
-        #input_dir = request.args.get('input_dir', '_unknown_')
-        input_dir = randomDirName
-        input_ = "/home/user/upload/person2anime/" + input_dir
+        user_key = randomDirName
+        input_ = "/home/user/upload/person2anime/" + user_key
         a2b = 0
-        global model_type
-        global remember_user_key
         model_type = 'person2anime'
-        remember_user_key = input_dir
-        print(input_dir)
-        print(input_)
-        print(model_type)
-        print(remember_user_key)
-
-        file_list = runImageTransfer(peson2anime_preloadModel, input_, input_dir, a2b)
+        
+        file_list = runImageTransfer(peson2anime_preloadModel, input_, user_key, a2b)
         file_list.sort()
         
-        byte_image_list = []
-        tmp_list = []
+        byte_image_list = [] #byte_image를 담기위한 list
+        tmp_list = [] #byte_image를 담기전에 decode 하기 위한 list
+        #imgFIle은 np.array형태여야 fromarray에 담길수 있음
+        #img_io는 각 파일마다 byte 객체를 적용해줘야하므로 for문 안에서 같이 반복을 돌아야 함
+        #b64encode로 encode 해준다.
         for image in file_list:
             imgFile = PIL.Image.fromarray(np.array(PIL.Image.open(image).convert("RGB")))
             img_io = io.BytesIO()
@@ -204,91 +189,94 @@ def person_To_anime(randomDirName):
             img = base64.b64encode(img_io.getvalue())
             tmp_list.append(img)
         
+        #decode 작업은 여기서 해준다.
         for i in tmp_list:
             byte_image_list.append(i.decode('ascii'))
-        remove()
-        output_dir = file_list[0].replace('static/img/','')
-        output_dir = output_dir.replace('/_out_0_0.jpg','').strip()
-        '''
-        for i in file_list:
-            imgFile = np.array(PIL.Image.open(i).convert("RGB"))
-            imgFile = PIL.Image.fromarray(imgFile)
-            img_io = io.BytesIO()
-            imgFile.save(img_io, 'jpeg', quality=100)
-            img_io.seek(0)
-            img = base64.b64encode(img_io.getvalue())
-            #return render_template(‘index.html’, img = img.decode(‘ascii’)
-        '''
-        new_file_list = []
-        for i in file_list:
-            new_file_list.append(i.replace('static/',''))
-        return render_template('showImage.html', image_names = new_file_list, rawimg=byte_image_list)
+        
+        #input file과 output file을 모두 제거해주는 함수 호출
+        remove(user_key, model_type)
+        return render_template('showImage.html', rawimg=byte_image_list)
     except Exception as e:
         print(e)
         return Response("person2anime is fail", status=400)    
 
-#@app.route('/male2female', methods=['GET', 'POST'])
 def male_To_female(randomDirName):
     try:
-        #input_dir = request.args.get('input_dir', '_unknown_')
-        input_dir = randomDirName
-        input_ = "/home/user/upload/male2female/" + input_dir
-        a2b = 1
-        global model_type
-        global remember_user_key
-        model_type = 'person2anime'
-        remember_user_key = input_dir
-
-        file_list = runImageTransfer(male2female_preloadModel, input_, input_dir, a2b)
+        user_key = randomDirName
+        input_ = "/home/user/upload/male2female/" + user_key
+        a2b = 0
+        model_type = 'male2female'
+        
+        file_list = runImageTransfer(male2female_preloadModel, input_, user_key, a2b)
         file_list.sort()
+        
+        byte_image_list = [] #byte_image를 담기위한 list
+        tmp_list = [] #byte_image를 담기전에 decode 하기 위한 list
 
-        output_dir = file_list[0].replace('static/img/','')
-        output_dir = output_dir.replace('/_out_0_0.jpg','').strip()
-
-        new_file_list = []
-        for i in file_list:
-            new_file_list.append(i.replace('static/',''))
-        print(new_file_list)
-        return render_template('showImage.html', image_names = new_file_list)
+        #imgFIle은 np.array형태여야 fromarray에 담길수 있음
+        #img_io는 각 파일마다 byte 객체를 적용해줘야하므로 for문 안에서 같이 반복을 돌아야 함
+        #b64encode로 encode 해준다.
+        for image in file_list:
+            imgFile = PIL.Image.fromarray(np.array(PIL.Image.open(image).convert("RGB")))
+            img_io = io.BytesIO()
+            imgFile.save(img_io, 'jpeg', quality = 100)
+            img_io.seek(0)
+            img = base64.b64encode(img_io.getvalue())
+            tmp_list.append(img)
+        
+        #decode 작업은 여기서 해준다.
+        for i in tmp_list:
+            byte_image_list.append(i.decode('ascii'))
+        
+        #input file과 output file을 모두 제거해주는 함수 호출
+        remove(user_key, model_type)
+        return render_template('showImage.html', rawimg=byte_image_list)
     except Exception as e:
         print(e)
-        return Response("male2female is fail", status=400)
+        return Response("male2female is fail", status=400)    
    
-#@app.route('/noglasses', methods=['GET', 'POST'])
 def no_glasses(randomDirName):
     try:
-        #input_dir = request.args.get('input_dir', '_unknown_')
-        input_dir = randomDirName
-        input_ = "/home/user/upload/no_glasses/" + input_dir
-        a2b = 1
-        global model_type
-        global remember_user_key
-        model_type = 'person2anime'
-        remember_user_key = input_dir
-
-        file_list = runImageTransfer(noglasses_preloadModel, input_, input_dir, a2b)    
-        file_list.sort()
-       
-        output_dir = file_list[0].replace('static/img/','')
-        output_dir = output_dir.replace('/_out_0_0.jpg','').strip()
+        user_key = randomDirName
+        input_ = "/home/user/upload/no_glasses/" + user_key
+        a2b = 0
+        model_type = 'no_glasses'
         
-        new_file_list = []
-        for i in file_list:
-            new_file_list.append(i.replace('static/',''))
-        print(new_file_list)
-        return render_template('showImage.html', image_names = new_file_list)
+        file_list = runImageTransfer(noglasses_preloadModel, input_, user_key, a2b)
+        file_list.sort()
+        
+        byte_image_list = [] #byte_image를 담기위한 list
+        tmp_list = [] #byte_image를 담기전에 decode 하기 위한 list
+        
+        #imgFIle은 np.array형태여야 fromarray에 담길수 있음
+        #img_io는 각 파일마다 byte 객체를 적용해줘야하므로 for문 안에서 같이 반복을 돌아야 함
+        #b64encode로 encode 해준다.
+        for image in file_list:
+            imgFile = PIL.Image.fromarray(np.array(PIL.Image.open(image).convert("RGB")))
+            img_io = io.BytesIO()
+            imgFile.save(img_io, 'jpeg', quality = 100)
+            img_io.seek(0)
+            img = base64.b64encode(img_io.getvalue())
+            tmp_list.append(img)
+        
+        #decode 작업은 여기서 해준다.
+        for i in tmp_list:
+            byte_image_list.append(i.decode('ascii'))
+        
+        #input file과 output file을 모두 제거해주는 함수 호출
+        remove(user_key, model_type)
+        return render_template('showImage.html', rawimg=byte_image_list)
     except Exception as e:
         print(e)
-        return Response("no_glasses is fail", status=400)
+        return Response("no_glasses is fail", status=400)    
 
-def remove():
-    remove_id = remember_user_key.strip()
-    remove_input_dir = '/home/user/upload/' + model_type + '/' + remove_id 
-    path = os.path.join('static/img/', remove_id)
-    print("now I start to remove file")
-    print("user key is " + remove_id)
-    print("To delete input path " + remove_input_dir)
-    print("To delete output path " + path)
+def remove(user_key, model_type):
+    remove_input_dir = '/home/user/upload/' + model_type + '/' + user_key 
+    path = os.path.join('static/img/', user_key)
+    print("Now start to remove file")
+    print("user key is " + user_key)
+    print("Input path " + remove_input_dir)
+    print("Output path " + path)
 
     #output path를 삭제하는 try 문
     try:
@@ -307,22 +295,6 @@ def remove():
     
     return print("All of delete process is completed!")
 
-'''
-#@app.route('/removeInputDir/home/user/upload/<model_type>/<input_dir>', methods=['GET', 'POST'])
-@app.after_response
-def removeInputDir(model_type, input_dir):
-    remove_input_dir = '/home/user/upload/' + model_type + '/' + input_dir 
-    print("now I start to remove input file")
-    print("input dir is " + remove_input_dir)
-    try:
-        if os.path.isdir(remove_input_dir):
-            shutil.rmtree(remove_input_dir)
-            return Response("Delete complete", status=200)
-        else:
-            return Response("There is nothing to Delete", status=400)
-    except Exception as e:
-        return Response("There is nothing to delete please Try again", status=400)
-'''
 if __name__ == '__main__':
     # server execute
     app.run(host='0.0.0.0', port=80, debug=True)
