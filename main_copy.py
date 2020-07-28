@@ -195,15 +195,17 @@ def person_To_anime(randomDirName):
         file_list.sort()
         
         byte_image_list = []
-        
+        tmp_list = []
         for image in file_list:
             imgFile = PIL.Image.fromarray(np.array(PIL.Image.open(image).convert("RGB")))
             img_io = io.BytesIO()
             imgFile.save(img_io, 'jpeg', quality = 100)
             img_io.seek(0)
             img = base64.b64encode(img_io.getvalue())
-            byte_image_list.append(img)
-
+            tmp_list.append(img)
+        
+        for i in tmp_list:
+            byte_image_list.append(i.decode('ascii'))
         output_dir = file_list[0].replace('static/img/','')
         output_dir = output_dir.replace('/_out_0_0.jpg','').strip()
         '''
@@ -219,7 +221,7 @@ def person_To_anime(randomDirName):
         new_file_list = []
         for i in file_list:
             new_file_list.append(i.replace('static/',''))
-        return render_template('showImage.html', image_names = new_file_list, rawimg=byte_image_list.decode('ascii'))
+        return render_template('showImage.html', image_names = new_file_list, rawimg=byte_image_list)
     except Exception as e:
         print(e)
         return Response("person2anime is fail", status=400)    
