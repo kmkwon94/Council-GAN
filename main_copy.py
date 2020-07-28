@@ -206,6 +206,7 @@ def person_To_anime(randomDirName):
         
         for i in tmp_list:
             byte_image_list.append(i.decode('ascii'))
+        remove()
         output_dir = file_list[0].replace('static/img/','')
         output_dir = output_dir.replace('/_out_0_0.jpg','').strip()
         '''
@@ -280,8 +281,6 @@ def no_glasses(randomDirName):
         print(e)
         return Response("no_glasses is fail", status=400)
 
-'''
-@app.after_response
 def remove():
     remove_id = remember_user_key.strip()
     remove_input_dir = '/home/user/upload/' + model_type + '/' + remove_id 
@@ -305,7 +304,7 @@ def remove():
             return print("Delete" + remove_input_dir + " is completed")
     except Exception as e:
         return print("Delete" + remove_input_dir + " is failed")
-'''
+
 '''
 #@app.route('/removeInputDir/home/user/upload/<model_type>/<input_dir>', methods=['GET', 'POST'])
 @app.after_response
