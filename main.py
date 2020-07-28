@@ -158,29 +158,9 @@ def fileupload():
         target = targetList[check_value]
         targetDir = baseDir + target['dir'] + randomDirName
         targetFunction = target["function"]
+        os.mkdir(targetDir)
         f.save(targetDir + '/' + secure_filename(f.filename))
         return targetFunction(randomDirName)
-        '''
-        /home/user/upload/person2anime/af495216-036c-49b7-884f-72637f6fef2c/person2anime_sample.jpg'
-        randomDirName = str(uuid.uuid4())
-        baseDir = '/home/user/upload'
-        if check_value == "ani":
-            path = '/home/user/upload/person2anime/'
-            os.mkdir(path + randomDirName)
-            f.save(path + randomDirName + '/' + secure_filename(f.filename))
-            print(path + randomDirName + '/' + secure_filename(f.filename))
-            return person_To_anime(randomDirName)
-        elif check_value == "m2f":
-            path = '/home/user/upload/male2female/'
-            os.mkdir(path + randomDirName)
-            f.save(path + randomDirName + '/' +secure_filename(f.filename))
-            return male_To_female(randomDirName)
-        else:
-            path = '/home/user/upload/no_glasses/'
-            os.mkdir(path + randomDirName)
-            f.save(path + randomDirName + '/' + secure_filename(f.filename))
-            return no_glasses(randomDirName)
-        '''
     except Exception as e:
         print(e)
         return Response("upload file and load model is fail", status=400)
