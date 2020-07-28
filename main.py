@@ -162,7 +162,7 @@ def fileupload():
         f.save(targetDir + '/' + secure_filename(f.filename))
         return targetFunction(randomDirName)
         '''
-        
+        randomDirName = str(uuid.uuid4())
         baseDir = '/home/user/upload'
         if check_value == "ani":
             path = '/home/user/upload/person2anime/'
