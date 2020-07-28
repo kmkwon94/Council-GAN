@@ -139,6 +139,7 @@ def fileupload():
     
     try:
         #randomDirName = str(uuid.uuid4()) #사용자끼리의 업로드한 이미지가 겹치지 않게끔 uuid를 이용하여 사용자를 구분하는 디렉터리를 만든다.
+        '''
         baseDir = '/home/user/upload'
         targetList = {
             "ani" : {
@@ -160,6 +161,26 @@ def fileupload():
         targetFunction = target["function"]
         f.save(targetDir + '/' + secure_filename(f.filename))
         return targetFunction(randomDirName)
+        '''
+        
+        baseDir = '/home/user/upload'
+        if check_value == "ani":
+            path = '/home/user/upload/person2anime/'
+            os.mkdir(path + randomDirName)
+            f.save(path + randomDirName + '/' + secure_filename(f.filename))
+            print(path + randomDirName + '/' + secure_filename(f.filename))
+            return person_To_anime(randomDirName)
+        elif check_value == "m2f":
+            path = '/home/user/upload/male2female/'
+            os.mkdir(path + randomDirName)
+            f.save(path + randomDirName + '/' +secure_filename(f.filename))
+            return male_To_female(randomDirName)
+        else:
+            path = '/home/user/upload/no_glasses/'
+            os.mkdir(path + randomDirName)
+            f.save(path + randomDirName + '/' + secure_filename(f.filename))
+            return no_glasses(randomDirName)
+        
     except Exception as e:
         print(e)
         return Response("upload file and load model is fail", status=400)
