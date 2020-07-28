@@ -205,15 +205,18 @@ def person_To_anime(randomDirName):
 
 def male_To_female(randomDirName):
     try:
+        print("hi5")
         user_key = randomDirName
         input_ = "/home/user/upload/male2female/" + user_key
         a2b = 0
         model_type = 'male2female'
         
+        print("hi6")
         file_list = runImageTransfer(male2female_preloadModel, input_, user_key, a2b)
         print(file_list)
         file_list.sort()
         
+        print("hi7")
         byte_image_list = [] #byte_image를 담기위한 list
         tmp_list = [] #byte_image를 담기전에 decode 하기 위한 list
 
