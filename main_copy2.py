@@ -25,11 +25,11 @@ import shutil
 from queue import Queue, Empty
 import threading
 from tqdm import tqdm
-import PIL
-from PIL import Image, ImageOps
-import base64
-import io
-
+#import PIL
+#from PIL import Image, ImageOps
+#import base64
+#import io
+from after_response import AfterResponse, AfterResponseMiddleware
 
 app = Flask("after_response")
 
@@ -37,6 +37,7 @@ app.config['JSON_AS_ASCII'] = False
 AfterResponse(app)
 CORS(app)
 path = "./static"
+
 
 ############################################################
 #preload model
@@ -113,16 +114,43 @@ remember_user_key = ''
 model_type = ''
 def handle_requests_by_batch():
     while True:
-        #BATCH_SIZE보다 크면 안에 있는 루프를 빠져나와서 requests_batch를 초기화한다.
         requests_batch = []
-        while not (len(requests_batch) >= BATCH_SIZE): #BATCH_SIZE 보다 작을때만 돈다 
+        while not (len(requests_batch) >= BATCH_SIZE):
             try:
-                #request_queue에 있는 내용물들을 꺼내서 requests_batch에 담는다.
                 requests_batch.append(requests_queue.get(timeout=CHECK_INTERVAL))
             except Empty:
                 continue
+            batch_outputs = []
+            for request in requests_batch:
+                batch_outputs.append(run(request['input'][0], request['input'][1]))
+
+            for request, output in zip(requests_batch, batch_outputs):
+                request['output'] = output
 
 threading.Thread(target=handle_requests_by_batch).start()
+
+def run(check_value, file):
+    if check_value == 'ani':
+        imgFile = np.array(PIL.Image.open(file).convert("RGB"))
+        file_list = runImageTransfer(peson2anime_preloadModel, imgFile, input_dir, a2b)
+        res = []
+        for image in file_list:
+            res.append(image)
+        return res
+    elif check_value == 'm2f':
+        imgFile = np.array(PIL.Image.open(file).convert("RGB"))
+        file_list = runImageTransfer(male2female_preloadModel, imgFile, input_dir, a2b)
+        res = []
+        for image in file_list:
+            res.append(image)
+        return res
+    else:
+        imgFile = np.array(PIL.Image.open(file).convert("RGB"))
+        file_list = runImageTransfer(noglasses_preloadModel, imgFile, input_dir, a2b)
+        res = []
+        for image in file_list:
+            res.append(image)
+        return res
     
 # 업로드 HTML 렌더링
 @app.route('/')
@@ -142,6 +170,7 @@ def fileupload():
 
     if requests_queue.qsize() >= BATCH_SIZE:
         return Response("Too many requests plese try again later", status=429)
+    
     req = {
         'input': [check_value, f]
     }
@@ -181,7 +210,7 @@ def person_To_anime(randomDirName):
     try:
         #input_dir = request.args.get('input_dir', '_unknown_')
         input_dir = randomDirName
-        input_ = "/home/user/upload/person2anime/" + input_dir
+        #input_ = "/home/user/upload/person2anime/" + input_dir
         a2b = 0
         global model_type
         global remember_user_key
@@ -195,16 +224,7 @@ def person_To_anime(randomDirName):
         file_list = runImageTransfer(peson2anime_preloadModel, input_, input_dir, a2b)
         file_list.sort()
         
-        byte_image_list = []
         
-        for image in file_list:
-            imgFile = PIL.Image.fromarray(np.array(PIL.Image.open(image).convert("RGB")))
-            img_io = io.BytesIO()
-            imgFile.save(img_io, 'jpeg', quality = 100)
-            img_io.seek(0)
-            img = base64.b64encode(img_io.getvalue())
-            byte_image_list.append(img)
-
         output_dir = file_list[0].replace('static/img/','')
         output_dir = output_dir.replace('/_out_0_0.jpg','').strip()
         '''
@@ -220,7 +240,7 @@ def person_To_anime(randomDirName):
         new_file_list = []
         for i in file_list:
             new_file_list.append(i.replace('static/',''))
-        return render_template('showImage.html', image_names = new_file_list, rawimg=byte_image_list.decode('ascii'))
+        return render_template('showImage.html', image_names = new_file_list)
     except Exception as e:
         print(e)
         return Response("person2anime is fail", status=400)    

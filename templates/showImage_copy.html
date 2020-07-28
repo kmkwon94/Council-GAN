@@ -4,8 +4,8 @@
   </head>
   <body>
     {{image_names}}
-    {% for img in rawimg %}
-    <img src="data:image/jpg;base64,{{ img|safe }}">
+    {% for image_name in image_names %}
+    <img src="{{ url_for('static', filename=image_name)}}">
   
     {% endfor %}
     <!--
