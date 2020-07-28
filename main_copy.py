@@ -147,19 +147,19 @@ def fileupload():
         #randomDirName = str(uuid.uuid4()) #사용자끼리의 업로드한 이미지가 겹치지 않게끔 uuid를 이용하여 사용자를 구분하는 디렉터리를 만든다.
         randomDirName = str(uuid.uuid4())
         if check_value == "ani":
-            os.mkdir('/home/user/upload/person2anime/' + randomDirName)
-            f.save('/home/user/upload/person2anime/' + randomDirName +'/' +
-            secure_filename(f.filename))
+            path = '/home/user/upload/person2anime/'
+            os.mkdir(path + randomDirName)
+            f.save(path + randomDirName + '/' + secure_filename(f.filename))
             return person_To_anime(randomDirName)
         elif check_value == "m2f":
-            os.mkdir('/home/user/upload/male2female/' + randomDirName)
-            f.save('/home/user/upload/male2female/' + randomDirName +'/' +
-            secure_filename(f.filename))
+            path = '/home/user/upload/male2female/'
+            os.mkdir(path + randomDirName)
+            f.save(path + randomDirName + '/' +secure_filename(f.filename))
             return male_To_female(randomDirName)
         else:
-            os.mkdir('/home/user/upload/no_glasses/' + randomDirName)
-            f.save('/home/user/upload/no_glasses/' + randomDirName +'/' +
-            secure_filename(f.filename))
+            path = '/home/user/upload/no_glasses/'
+            os.mkdir(path + randomDirName)
+            f.save(path + randomDirName + '/' + secure_filename(f.filename))
             return no_glasses(randomDirName)
     except Exception as e:
         print(e)
