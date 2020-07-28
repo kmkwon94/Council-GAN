@@ -294,16 +294,18 @@ def remove():
     try:
         if os.path.isdir(path):
             shutil.rmtree(path)
-            return print("Delete " + path + " is completed")
+            print("Delete " + path + " is completed")
     except Exception as e:
-        return print("Delete" + path + " is failed")
+        print("Delete" + path + " is failed")
     #input path를 삭제하는 try 문
     try:
         if os.path.isdir(remove_input_dir):
             shutil.rmtree(remove_input_dir)
-            return print("Delete" + remove_input_dir + " is completed")
+            print("Delete" + remove_input_dir + " is completed")
     except Exception as e:
-        return print("Delete" + remove_input_dir + " is failed")
+        print("Delete" + remove_input_dir + " is failed")
+    
+    return print("All of delete process is completed!")
 
 '''
 #@app.route('/removeInputDir/home/user/upload/<model_type>/<input_dir>', methods=['GET', 'POST'])
