@@ -298,4 +298,4 @@ def remove(user_key, model_type):
 
 if __name__ == '__main__':
     # server execute
-    app.run(host='0.0.0.0', port=80)
+    app.run(host='0.0.0.0', port=80, threaded=False)
