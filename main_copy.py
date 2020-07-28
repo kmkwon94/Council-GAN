@@ -31,10 +31,9 @@ import base64
 import io
 
 
-app = Flask("after_response")
+app = Flask(__name__)
 
 app.config['JSON_AS_ASCII'] = False
-AfterResponse(app)
 CORS(app)
 path = "./static"
 
