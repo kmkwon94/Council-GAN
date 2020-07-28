@@ -208,7 +208,7 @@ def male_To_female(randomDirName):
         print("hi5")
         user_key = randomDirName
         input_ = "/home/user/upload/male2female/" + user_key
-        a2b = 0
+        a2b = 1
         model_type = 'male2female'
         
         print("hi6")
@@ -246,7 +246,7 @@ def no_glasses(randomDirName):
     try:
         user_key = randomDirName
         input_ = "/home/user/upload/no_glasses/" + user_key
-        a2b = 0
+        a2b = 1
         model_type = 'no_glasses'
         
         file_list = runImageTransfer(noglasses_preloadModel, input_, user_key, a2b)
