@@ -29,6 +29,7 @@ import PIL
 from PIL import Image, ImageOps
 import base64
 import io
+#import concurrent.futures
 
 
 app = Flask(__name__)
@@ -37,6 +38,20 @@ app.config['JSON_AS_ASCII'] = False
 CORS(app)
 path = "./static"
 
+
+class ThreadWithReturnValue(Thread):
+    def __init__(self, group=None, target=None, name=None,
+                 args=(), kwargs={}, Verbose=None):
+        Thread.__init__(self, group, target, name, args, kwargs)
+        self._return = None
+    def run(self):
+        print(type(self._target))
+        if self._target is not None:
+            self._return = self._target(*self._args,
+                                                **self._kwargs)
+    def join(self, *args):
+        Thread.join(self, *args)
+        return self._return
 ############################################################
 #preload model
 def loadModel(config, checkpoint, a2b):
@@ -105,6 +120,7 @@ noglasses_preloadModel = loadModel("pretrain/glasses_removal/128/glasses_council
 ############################################################
 
 #handling over request by status code 429
+'''
 requests_queue = Queue()
 BATCH_SIZE = 3
 CHECK_INTERVAL = 0.1
@@ -120,7 +136,7 @@ def handle_requests_by_batch():
                 continue
 
 threading.Thread(target=handle_requests_by_batch).start()
-    
+'''
 # 업로드 HTML 렌더링
 @app.route('/')
 def render_file():
@@ -172,8 +188,23 @@ def person_To_anime(randomDirName):
         input_ = "/home/user/upload/person2anime/" + user_key
         a2b = 0
         model_type = 'person2anime'
+        #output_folder, user_key , '_out_' + str(curr_image_num) + '_' + str(j) + '.jpg'
+        # /static/img/<user-key>/_out_(0~9)_
+
+        t1 = ThreadWithReturnValue(target=runImageTransfer, args=(peson2anime_preloadModel,input_,user_key,a2b))
+        t1.user_id = user_key
+        threads.append(t1)
+        while threads[0].user_id!=user_key:
+            print(str(user_key)+": ", threads[0].user_id)
+            if threads[0].is_alive():
+                threads[0].join()
+        threads[0].start()
+        file_list = threads[0].join()
+        print(file_list)
+        print(threads.pop(0))
+        print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
         
-        file_list = runImageTransfer(peson2anime_preloadModel, input_, user_key, a2b)
+        #file_list = runImageTransfer(peson2anime_preloadModel, input_, user_key, a2b)
         file_list.sort()
         
         byte_image_list = [] #byte_image를 담기위한 list
@@ -207,8 +238,20 @@ def male_To_female(randomDirName):
         a2b = 1
         model_type = 'male2female'
         
-
-        file_list = runImageTransfer(male2female_preloadModel, input_, user_key, a2b)
+        t1 = ThreadWithReturnValue(target=runImageTransfer, args=(male2female_preloadModel,input_,user_key,a2b))
+        t1.user_id = user_key
+        threads.append(t1)
+        while threads[0].user_id!=user_key:
+            print(str(user_key)+": ", threads[0].user_id)
+            if threads[0].is_alive():
+                threads[0].join()
+        threads[0].start()
+        file_list = threads[0].join()
+        print(file_list)
+        print(threads.pop(0))
+        print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+        
+        #file_list = runImageTransfer(male2female_preloadModel, input_, user_key, a2b)
         file_list.sort()
         
         byte_image_list = [] #byte_image를 담기위한 list
@@ -243,7 +286,19 @@ def no_glasses(randomDirName):
         a2b = 1
         model_type = 'no_glasses'
         
-        file_list = runImageTransfer(noglasses_preloadModel, input_, user_key, a2b)
+        t1 = ThreadWithReturnValue(target=runImageTransfer, args=(noglasses_preloadModel,input_,user_key,a2b))
+        t1.user_id = user_key
+        threads.append(t1)
+        while threads[0].user_id!=user_key:
+            print(str(user_key)+": ", threads[0].user_id)
+            if threads[0].is_alive():
+                threads[0].join()
+        threads[0].start()
+        file_list = threads[0].join()
+        print(file_list)
+        print(threads.pop(0))
+        print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+        #file_list = runImageTransfer(noglasses_preloadModel, input_, user_key, a2b)
         file_list.sort()
         
         byte_image_list = [] #byte_image를 담기위한 list
@@ -298,4 +353,4 @@ def remove(user_key, model_type):
 
 if __name__ == '__main__':
     # server execute
-    app.run(host='0.0.0.0', port=80, threaded=False)
+    app.run(host='0.0.0.0', port=80, debug=True)

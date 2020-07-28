@@ -88,4 +88,5 @@ def runImageTransfer(preload_model, input_folder, user_key, a2b):
                 if not os.path.exists(os.path.dirname(path_all_in_one)):
                     os.makedirs(os.path.dirname(path_all_in_one))
             vutils.save_image(outputs.data, path_all_in_one, padding=0, normalize=True)
+    
     return file_list
