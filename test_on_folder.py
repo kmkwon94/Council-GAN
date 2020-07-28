@@ -35,7 +35,6 @@ def runImageTransfer(preload_model, input_folder, user_key, a2b):
     seed = 1
     num_of_images_to_test = 10000
 
-    print("hi8")
     # Setup model and data loader
     image_names = ImageFolder(input_folder, transform=None, return_paths=True)
     if not 'new_size_a' in config.keys():
@@ -44,7 +43,6 @@ def runImageTransfer(preload_model, input_folder, user_key, a2b):
     data_loader = get_data_loader_folder(input_folder, 1, False,\
                                         new_size=config['new_size_a'] if 'new_size_a' in config.keys() else config['new_size'],\
                                         crop=False, config=config, is_data_A=is_data_A)
-    print("hi9")
     encode_s = []
     decode_s = []
     if a2b:
@@ -56,7 +54,6 @@ def runImageTransfer(preload_model, input_folder, user_key, a2b):
             encode_s.append(trainer.gen_b2a_s[i].encode)  # encode function
             decode_s.append(trainer.gen_b2a_s[i].decode)  # decode function
 
-    print("hi10")
     # creat testing images
     file_list= [] 
     seed = 1
