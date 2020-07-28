@@ -208,6 +208,7 @@ def male_To_female(randomDirName):
         a2b = 0
         model_type = 'male2female'
         
+        file_list = []
         file_list = runImageTransfer(male2female_preloadModel, input_, user_key, a2b)
         file_list.sort()
         
@@ -243,6 +244,7 @@ def no_glasses(randomDirName):
         a2b = 0
         model_type = 'no_glasses'
         
+        file_list = []
         file_list = runImageTransfer(noglasses_preloadModel, input_, user_key, a2b)
         file_list.sort()
         
