@@ -23,7 +23,7 @@ import string
 import uuid
 import shutil
 from queue import Queue, Empty
-import threading
+from threading import Thread
 from tqdm import tqdm
 import PIL
 from PIL import Image, ImageOps
@@ -37,7 +37,7 @@ app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
 CORS(app)
 path = "./static"
-
+threads = []
 
 class ThreadWithReturnValue(Thread):
     def __init__(self, group=None, target=None, name=None,
@@ -151,14 +151,18 @@ def fileupload():
     #내가 전달 받는 request는 'file'과 'check_model'
     check_value = request.form['check_model']
     f = request.files['file']
-
+    
+    global threads
+    if len(threads) > 5:
+        return Response("error : Too many requests", status=429)
+    '''
     if requests_queue.qsize() >= BATCH_SIZE: return Response("Too many requests plese try again later", status=429)
     
     req = {
         'input': [check_value, f]
     }
     requests_queue.put(req)
-   
+    '''
     try:
         #randomDirName = str(uuid.uuid4()) #사용자끼리의 업로드한 이미지가 겹치지 않게끔 uuid를 이용하여 사용자를 구분하는 디렉터리를 만든다.
         randomDirName = str(uuid.uuid4())
