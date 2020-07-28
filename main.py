@@ -119,24 +119,6 @@ male2female_preloadModel = loadModel("pretrain/m2f/256/male2female_council_folde
 noglasses_preloadModel = loadModel("pretrain/glasses_removal/128/glasses_council_folder.yaml", "pretrain/glasses_removal/128/01000000", 1)
 ############################################################
 
-#handling over request by status code 429
-'''
-requests_queue = Queue()
-BATCH_SIZE = 3
-CHECK_INTERVAL = 0.1
-def handle_requests_by_batch():
-    while True:
-        #BATCH_SIZE보다 크면 안에 있는 루프를 빠져나와서 requests_batch를 초기화한다.
-        requests_batch = []
-        while not (len(requests_batch) >= BATCH_SIZE): #BATCH_SIZE 보다 작을때만 돈다 
-            try:
-                #request_queue에 있는 내용물들을 꺼내서 requests_batch에 담는다.
-                requests_batch.append(requests_queue.get(timeout=CHECK_INTERVAL))
-            except Empty:
-                continue
-
-threading.Thread(target=handle_requests_by_batch).start()
-'''
 # 업로드 HTML 렌더링
 @app.route('/')
 def render_file():
@@ -152,17 +134,11 @@ def fileupload():
     check_value = request.form['check_model']
     f = request.files['file']
     
+    #handling over request by status code 429
     global threads
-    if len(threads) > 5:
+    if len(threads) > 15:
         return Response("error : Too many requests", status=429)
-    '''
-    if requests_queue.qsize() >= BATCH_SIZE: return Response("Too many requests plese try again later", status=429)
     
-    req = {
-        'input': [check_value, f]
-    }
-    requests_queue.put(req)
-    '''
     try:
         #randomDirName = str(uuid.uuid4()) #사용자끼리의 업로드한 이미지가 겹치지 않게끔 uuid를 이용하여 사용자를 구분하는 디렉터리를 만든다.
         randomDirName = str(uuid.uuid4())
@@ -192,9 +168,8 @@ def person_To_anime(randomDirName):
         input_ = "/home/user/upload/person2anime/" + user_key
         a2b = 0
         model_type = 'person2anime'
-        #output_folder, user_key , '_out_' + str(curr_image_num) + '_' + str(j) + '.jpg'
-        # /static/img/<user-key>/_out_(0~9)_
-
+      
+        #handling multi-threads
         t1 = ThreadWithReturnValue(target=runImageTransfer, args=(peson2anime_preloadModel,input_,user_key,a2b))
         t1.user_id = user_key
         threads.append(t1)
@@ -204,11 +179,7 @@ def person_To_anime(randomDirName):
                 threads[0].join()
         threads[0].start()
         file_list = threads[0].join()
-        print(file_list)
-        print(threads.pop(0))
-        print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-        
-        #file_list = runImageTransfer(peson2anime_preloadModel, input_, user_key, a2b)
+        threads.pop(0)
         file_list.sort()
         
         byte_image_list = [] #byte_image를 담기위한 list
@@ -251,11 +222,7 @@ def male_To_female(randomDirName):
                 threads[0].join()
         threads[0].start()
         file_list = threads[0].join()
-        print(file_list)
-        print(threads.pop(0))
-        print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-        
-        #file_list = runImageTransfer(male2female_preloadModel, input_, user_key, a2b)
+        threads.pop(0)
         file_list.sort()
         
         byte_image_list = [] #byte_image를 담기위한 list
@@ -299,10 +266,7 @@ def no_glasses(randomDirName):
                 threads[0].join()
         threads[0].start()
         file_list = threads[0].join()
-        print(file_list)
-        print(threads.pop(0))
-        print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-        #file_list = runImageTransfer(noglasses_preloadModel, input_, user_key, a2b)
+        threads.pop(0)
         file_list.sort()
         
         byte_image_list = [] #byte_image를 담기위한 list
