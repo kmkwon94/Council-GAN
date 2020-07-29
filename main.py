@@ -134,7 +134,7 @@ def fileupload():
     
     #handling over request by status code 429
     global threads
-    if len(threads) > 15:
+    if len(threads) > 10:
         return Response("error : Too many requests", status=429)
     
     try:
@@ -176,7 +176,8 @@ def person_To_anime(randomDirName):
                 threads[0].join()
         threads[0].start()
         file_list = threads[0].join()
-        threads.pop(0)
+        print(threads.pop(0))
+        print(file_list)
         file_list.sort()
         
         byte_image_list = [] #byte_image를 담기위한 list
