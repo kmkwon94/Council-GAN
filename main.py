@@ -207,7 +207,6 @@ def person_To_anime(randomDirName):
             print(str(user_key)+": ", threads[0].user_id)
             if threads[0].is_alive():
                 threads[0].join()
-        print("hi !!!!! outside of while loop", user_key)
         threads[0].start()
         
         file_list = threads[0].join(timeout=3)
@@ -215,9 +214,7 @@ def person_To_anime(randomDirName):
             threads[0].kill()
             threads.pop(0)
             raise Exception("error model does not work! please try again 30 seconds later")
-        print(threads.pop(0))
-        print(len(threads), "in function")
-        print(file_list)
+        threads.pop(0)
         file_list.sort()
         
         byte_image_list = [] #byte_image를 담기위한 list
@@ -258,17 +255,14 @@ def male_To_female(randomDirName):
             print(str(user_key)+": ", threads[0].user_id)
             if threads[0].is_alive():
                 threads[0].join()
-        print("hi !!!!! outside of while loop", user_key)
         threads[0].start()
-        
+
         file_list = threads[0].join(timeout=3)
         if threads[0].is_alive():
             threads[0].kill()
             threads.pop(0)
             raise Exception("error model does not work! please try again 30 seconds later")
-        print(threads.pop(0))
-        print(len(threads), "in function")
-        print(file_list)
+        threads.pop(0)
         file_list.sort()
         
         byte_image_list = [] #byte_image를 담기위한 list
@@ -310,17 +304,14 @@ def no_glasses(randomDirName):
             print(str(user_key)+": ", threads[0].user_id)
             if threads[0].is_alive():
                 threads[0].join()
-        print("hi !!!!! outside of while loop", user_key)
         threads[0].start()
         
         file_list = threads[0].join(timeout=3)   
         if threads[0].is_alive():
             threads[0].kill()
-            print(threads.pop(0))
+            threads.pop(0)
             raise Exception("error model does not work! please try again 30 seconds later")
-        print(threads.pop(0))
-        print(len(threads), "in function")
-        print(file_list)
+        threads.pop(0)
         file_list.sort()
         
         byte_image_list = [] #byte_image를 담기위한 list
