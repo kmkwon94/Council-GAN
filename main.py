@@ -135,6 +135,7 @@ def fileupload():
     
     #handling over request by status code 429
     global threads
+    print(len(threads),"fileUpload")
     if len(threads) > 10:
         return Response("error : Too many requests", status=429)
     
@@ -185,6 +186,7 @@ def person_To_anime(randomDirName):
         threads[0].start()
         file_list = threads[0].join()
         print(threads.pop(0))
+        print(len(threads), "in function")
         print(file_list)
         file_list.sort()
         
@@ -242,6 +244,7 @@ def male_To_female(randomDirName):
         threads[0].start()
         file_list = threads[0].join()
         print(threads.pop(0))
+        print(len(threads), "in function")
         print(file_list)
         file_list.sort()
         
@@ -292,6 +295,7 @@ def no_glasses(randomDirName):
         threads[0].start()
         file_list = threads[0].join()
         print(threads.pop(0))
+        print(len(threads), "in function")
         print(file_list)
         file_list.sort()
         
