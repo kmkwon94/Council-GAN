@@ -50,7 +50,7 @@ class ThreadWithReturnValue(Thread):
             self._return = self._target(*self._args,
                                                 **self._kwargs)
     def join(self, timeout=3):
-        Thread.join(self)
+        Thread.join(self, timeout=3)
         return self._return
 
 class thread_with_trace(ThreadWithReturnValue):
