@@ -38,7 +38,6 @@ path = "./static"
 threads = []
 
 #multi-threads with return value
-'''
 class ThreadWithReturnValue(Thread):
     def __init__(self, group=None, target=None, name=None,
                  args=(), kwargs={}, Verbose=None):
@@ -52,7 +51,6 @@ class ThreadWithReturnValue(Thread):
     def join(self, *args):
         Thread.join(self, *args)
         return self._return
-'''
 ############################################################
 #preload model
 def loadModel(config, checkpoint, a2b):
@@ -170,12 +168,13 @@ def person_To_anime(randomDirName):
         model_type = 'person2anime'
       
         #handling multi-threads
+        '''
         with concurrent.futures.ThreadPoolExecutor() as executor:
             future = executor.submit(runImageTransfer, peson2anime_preloadModel,input_,user_key,a2b)
             file_list = future.result()
             print(file_list)
-
         '''
+        
         t1 = ThreadWithReturnValue(target=runImageTransfer, args=(peson2anime_preloadModel,input_,user_key,a2b))
         t1.user_id = user_key
         threads.append(t1)
@@ -188,7 +187,7 @@ def person_To_anime(randomDirName):
         print(threads.pop(0))
         print(file_list)
         file_list.sort()
-        '''
+        
         byte_image_list = [] #byte_image를 담기위한 list
         tmp_list = [] #byte_image를 담기전에 decode 하기 위한 list
         #imgFIle은 np.array형태여야 fromarray에 담길수 있음
@@ -219,10 +218,18 @@ def male_To_female(randomDirName):
         input_ = "/home/user/upload/male2female/" + user_key
         a2b = 1
         model_type = 'male2female'
-        
+        '''
         with concurrent.futures.ThreadPoolExecutor() as executor:
             future = executor.submit(runImageTransfer, male2female_preloadModel,input_,user_key,a2b)
-            file_list = future.result()
+            future.user_id = user_key
+            threads.append(future)
+            while threads[0].user_id != user_key:
+                print(str(user_key)+": ", threads[0].user_id)
+                if threads[0].is_alive():
+                    threads[0].join()
+            threads[0].start()
+            file_list = threads[0].result()
+            print(threads[0].pop(0))
             print(file_list)
         '''
         t1 = ThreadWithReturnValue(target=runImageTransfer, args=(male2female_preloadModel,input_,user_key,a2b))
@@ -237,7 +244,7 @@ def male_To_female(randomDirName):
         print(threads.pop(0))
         print(file_list)
         file_list.sort()
-        '''
+        
         byte_image_list = [] #byte_image를 담기위한 list
         tmp_list = [] #byte_image를 담기전에 decode 하기 위한 list
 
@@ -269,7 +276,7 @@ def no_glasses(randomDirName):
         input_ = "/home/user/upload/no_glasses/" + user_key
         a2b = 1
         model_type = 'no_glasses'
-        
+        '''
         with concurrent.futures.ThreadPoolExecutor() as executor:
             future = executor.submit(runImageTransfer, noglasses_preloadModel,input_,user_key,a2b)
             file_list = future.result()
@@ -287,7 +294,7 @@ def no_glasses(randomDirName):
         print(threads.pop(0))
         print(file_list)
         file_list.sort()
-        '''
+        
         byte_image_list = [] #byte_image를 담기위한 list
         tmp_list = [] #byte_image를 담기전에 decode 하기 위한 list
         
@@ -327,6 +334,7 @@ def remove(user_key, model_type):
             shutil.rmtree(path)
             print("Delete " + path + " is completed")
     except Exception as e:
+        print(e)
         print("Delete" + path + " is failed")
     #input path를 삭제하는 try 문
     try:
