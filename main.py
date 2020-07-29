@@ -49,8 +49,8 @@ class ThreadWithReturnValue(Thread):
         if self._target is not None:
             self._return = self._target(*self._args,
                                                 **self._kwargs)
-    def join(self, *args):
-        Thread.join(self, *args)
+    def join(self, timeout=3):
+        Thread.join(self)
         return self._return
 
 class thread_with_trace(ThreadWithReturnValue):
@@ -246,7 +246,7 @@ def person_To_anime(randomDirName):
         return render_template('showImage.html', rawimg=byte_image_list)
     except Exception as e:
         print(e)
-        return Response(f"person2anime is fail {e}", status=400)    
+        return Response("person2anime is fail", status=400)    
 
 def male_To_female(randomDirName):
     try:
