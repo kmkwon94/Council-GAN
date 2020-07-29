@@ -200,13 +200,6 @@ def person_To_anime(randomDirName):
         model_type = 'person2anime'
       
         #handling multi-threads
-        '''
-        with concurrent.futures.ThreadPoolExecutor() as executor:
-            future = executor.submit(runImageTransfer, peson2anime_preloadModel,input_,user_key,a2b)
-            file_list = future.result()
-            print(file_list)
-        '''
-        
         t1 = thread_with_trace(target=runImageTransfer, args=(peson2anime_preloadModel,input_,user_key,a2b))
         t1.user_id = user_key
         threads.append(t1)
@@ -216,13 +209,12 @@ def person_To_anime(randomDirName):
                 threads[0].join()
         print("hi !!!!! outside of while loop", user_key)
         threads[0].start()
-        try:
-            file_list = threads[0].join(timeout=3)
-        except Exception as e:    
-            if threads[0].is_alive():
-                threads[0].kill()
-                print(threads.pop(0))
-            return Response("model error please try again 30 secondes after.", status=400)
+        
+        file_list = threads[0].join(timeout=3)
+        if threads[0].is_alive():
+            threads[0].kill()
+            threads.pop(0)
+            raise Exception("error model does not work! please try again 30 seconds later")
         print(threads.pop(0))
         print(len(threads), "in function")
         print(file_list)
@@ -258,20 +250,7 @@ def male_To_female(randomDirName):
         input_ = "/home/user/upload/male2female/" + user_key
         a2b = 1
         model_type = 'male2female'
-        '''
-        with concurrent.futures.ThreadPoolExecutor() as executor:
-            future = executor.submit(runImageTransfer, male2female_preloadModel,input_,user_key,a2b)
-            future.user_id = user_key
-            threads.append(future)
-            while threads[0].user_id != user_key:
-                print(str(user_key)+": ", threads[0].user_id)
-                if threads[0].is_alive():
-                    threads[0].join()
-            threads[0].start()
-            file_list = threads[0].result()
-            print(threads[0].pop(0))
-            print(file_list)
-        '''
+
         t1 = ThreadWithReturnValue(target=runImageTransfer, args=(male2female_preloadModel,input_,user_key,a2b))
         t1.user_id = user_key
         threads.append(t1)
@@ -281,13 +260,12 @@ def male_To_female(randomDirName):
                 threads[0].join()
         print("hi !!!!! outside of while loop", user_key)
         threads[0].start()
-        try:
-            file_list = threads[0].join(timeout=3)
-        except Exception as e:    
-            if threads[0].is_alive():
-                threads[0].kill()
-                print(threads.pop(0))
-            return Response("model error please try again 30 secondes after.", status=400)
+        
+        file_list = threads[0].join(timeout=3)
+        if threads[0].is_alive():
+            threads[0].kill()
+            threads.pop(0)
+            raise Exception("error model does not work! please try again 30 seconds later")
         print(threads.pop(0))
         print(len(threads), "in function")
         print(file_list)
@@ -324,12 +302,7 @@ def no_glasses(randomDirName):
         input_ = "/home/user/upload/no_glasses/" + user_key
         a2b = 1
         model_type = 'no_glasses'
-        '''
-        with concurrent.futures.ThreadPoolExecutor() as executor:
-            future = executor.submit(runImageTransfer, noglasses_preloadModel,input_,user_key,a2b)
-            file_list = future.result()
-            print(file_list)
-        '''
+
         t1 = ThreadWithReturnValue(target=runImageTransfer, args=(noglasses_preloadModel,input_,user_key,a2b))
         t1.user_id = user_key
         threads.append(t1)
@@ -339,13 +312,12 @@ def no_glasses(randomDirName):
                 threads[0].join()
         print("hi !!!!! outside of while loop", user_key)
         threads[0].start()
-        try:
-            file_list = threads[0].join(timeout=3)
-        except Exception as e:    
-            if threads[0].is_alive():
-                threads[0].kill()
-                print(threads.pop(0))
-            return Response("model error please try again 30 secondes after.", status=400)
+        
+        file_list = threads[0].join(timeout=3)   
+        if threads[0].is_alive():
+            threads[0].kill()
+            print(threads.pop(0))
+            raise Exception("error model does not work! please try again 30 seconds later")
         print(threads.pop(0))
         print(len(threads), "in function")
         print(file_list)
