@@ -220,7 +220,8 @@ def male_To_female(randomDirName):
                 threads[0].join()
         threads[0].start()
         file_list = threads[0].join()
-        threads.pop(0)
+        print(threads.pop(0))
+        print(file_list)
         file_list.sort()
         
         byte_image_list = [] #byte_image를 담기위한 list
@@ -264,7 +265,8 @@ def no_glasses(randomDirName):
                 threads[0].join()
         threads[0].start()
         file_list = threads[0].join()
-        threads.pop(0)
+        print(threads.pop(0))
+        print(file_list)
         file_list.sort()
         
         byte_image_list = [] #byte_image를 담기위한 list
