@@ -251,7 +251,7 @@ def male_To_female(randomDirName):
         a2b = 1
         model_type = 'male2female'
 
-        t1 = ThreadWithReturnValue(target=runImageTransfer, args=(male2female_preloadModel,input_,user_key,a2b))
+        t1 = thread_with_trace(target=runImageTransfer, args=(male2female_preloadModel,input_,user_key,a2b))
         t1.user_id = user_key
         threads.append(t1)
         while threads[0].user_id!=user_key:
@@ -303,7 +303,7 @@ def no_glasses(randomDirName):
         a2b = 1
         model_type = 'no_glasses'
 
-        t1 = ThreadWithReturnValue(target=runImageTransfer, args=(noglasses_preloadModel,input_,user_key,a2b))
+        t1 = thread_with_trace(target=runImageTransfer, args=(noglasses_preloadModel,input_,user_key,a2b))
         t1.user_id = user_key
         threads.append(t1)
         while threads[0].user_id!=user_key:
