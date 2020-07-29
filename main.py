@@ -30,6 +30,7 @@ from PIL import Image, ImageOps
 import base64
 import io
 import signal
+import sys
 
 app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
@@ -54,13 +55,13 @@ class ThreadWithReturnValue(Thread):
 
 class thread_with_trace(ThreadWithReturnValue):
     def __init__(self, *args, **keywords):
-        threading.Thread.__init__(self, *args, **keywords)
+        ThreadWithReturnValue.__init__(self, *args, **keywords)
         self.killed = False
 
     def start(self):
         self.__run_backup = self.run
         self.run = self.__run
-        threading.Thread.start(self)
+        ThreadWithReturnValue.start(self)
 
     def __run(self):
         sys.settrace(self.globaltrace)
