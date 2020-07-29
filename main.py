@@ -29,7 +29,7 @@ import PIL
 from PIL import Image, ImageOps
 import base64
 import io
-import concurrent.futures
+import signal
 
 app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
@@ -51,6 +51,36 @@ class ThreadWithReturnValue(Thread):
     def join(self, *args):
         Thread.join(self, *args)
         return self._return
+
+class thread_with_trace(ThreadWithReturnValue):
+    def __init__(self, *args, **keywords):
+        threading.Thread.__init__(self, *args, **keywords)
+        self.killed = False
+
+    def start(self):
+        self.__run_backup = self.run
+        self.run = self.__run
+        threading.Thread.start(self)
+
+    def __run(self):
+        sys.settrace(self.globaltrace)
+        self.__run_backup()
+        self.run = self.__run_backup
+
+    def globaltrace(self, frame, event, arg):
+        if event == 'call':
+            return self.localtrace
+        else:
+            return None
+
+    def localtrace(self, frame, event, arg):
+        if self.killed:
+            if event == 'line':
+                raise SystemExit()
+        return self.localtrace
+
+    def kill(self):
+        self.killed = True
 ############################################################
 #preload model
 def loadModel(config, checkpoint, a2b):
@@ -176,7 +206,7 @@ def person_To_anime(randomDirName):
             print(file_list)
         '''
         
-        t1 = ThreadWithReturnValue(target=runImageTransfer, args=(peson2anime_preloadModel,input_,user_key,a2b))
+        t1 = thread_with_trace(target=runImageTransfer, args=(peson2anime_preloadModel,input_,user_key,a2b))
         t1.user_id = user_key
         threads.append(t1)
         while threads[0].user_id!=user_key:
@@ -185,7 +215,9 @@ def person_To_anime(randomDirName):
                 threads[0].join()
         print("hi !!!!! outside of while loop", user_key)
         threads[0].start()
-        file_list = threads[0].join()
+        file_list = threads[0].join(timeout=3)
+        if threads[0].is_alive():
+            threads[0].kill()
         print(threads.pop(0))
         print(len(threads), "in function")
         print(file_list)
@@ -244,7 +276,7 @@ def male_To_female(randomDirName):
                 threads[0].join()
         print("hi !!!!! outside of while loop", user_key)
         threads[0].start()
-        file_list = threads[0].join()
+        file_list = threads[0].join(timeout=3)
         print(threads.pop(0))
         print(len(threads), "in function")
         print(file_list)
@@ -296,7 +328,7 @@ def no_glasses(randomDirName):
                 threads[0].join()
         print("hi !!!!! outside of while loop", user_key)
         threads[0].start()
-        file_list = threads[0].join()
+        file_list = threads[0].join(timeout=3)
         print(threads.pop(0))
         print(len(threads), "in function")
         print(file_list)

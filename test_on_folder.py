@@ -60,6 +60,7 @@ def runImageTransfer(preload_model, input_folder, user_key, a2b):
     file_list= [] 
     seed = 1
     curr_image_num = -1
+    
     for i, (images, names) in tqdm(enumerate(zip(data_loader, image_names)), total=num_of_images_to_test):
     
         #print(i)
