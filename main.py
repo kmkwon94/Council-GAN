@@ -281,7 +281,13 @@ def male_To_female(randomDirName):
                 threads[0].join()
         print("hi !!!!! outside of while loop", user_key)
         threads[0].start()
-        file_list = threads[0].join(timeout=3)
+        try:
+            file_list = threads[0].join(timeout=3)
+        except Exception as e:    
+            if threads[0].is_alive():
+                threads[0].kill()
+                print(threads.pop(0))
+            return Response("model error please try again 30 secondes after.", status=400)
         print(threads.pop(0))
         print(len(threads), "in function")
         print(file_list)
@@ -333,7 +339,13 @@ def no_glasses(randomDirName):
                 threads[0].join()
         print("hi !!!!! outside of while loop", user_key)
         threads[0].start()
-        file_list = threads[0].join(timeout=3)
+        try:
+            file_list = threads[0].join(timeout=3)
+        except Exception as e:    
+            if threads[0].is_alive():
+                threads[0].kill()
+                print(threads.pop(0))
+            return Response("model error please try again 30 secondes after.", status=400)
         print(threads.pop(0))
         print(len(threads), "in function")
         print(file_list)
