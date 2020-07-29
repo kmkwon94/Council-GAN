@@ -29,6 +29,7 @@ import PIL
 from PIL import Image, ImageOps
 import base64
 import io
+import concurrent.futures
 
 app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
@@ -37,6 +38,7 @@ path = "./static"
 threads = []
 
 #multi-threads with return value
+'''
 class ThreadWithReturnValue(Thread):
     def __init__(self, group=None, target=None, name=None,
                  args=(), kwargs={}, Verbose=None):
@@ -50,6 +52,7 @@ class ThreadWithReturnValue(Thread):
     def join(self, *args):
         Thread.join(self, *args)
         return self._return
+'''
 ############################################################
 #preload model
 def loadModel(config, checkpoint, a2b):
@@ -167,6 +170,12 @@ def person_To_anime(randomDirName):
         model_type = 'person2anime'
       
         #handling multi-threads
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            future = executor.submit(runImageTransfer, peson2anime_preloadModel,input_,user_key,a2b)
+            file_list = future.result()
+            print(file_list)
+
+        '''
         t1 = ThreadWithReturnValue(target=runImageTransfer, args=(peson2anime_preloadModel,input_,user_key,a2b))
         t1.user_id = user_key
         threads.append(t1)
@@ -179,7 +188,7 @@ def person_To_anime(randomDirName):
         print(threads.pop(0))
         print(file_list)
         file_list.sort()
-        
+        '''
         byte_image_list = [] #byte_image를 담기위한 list
         tmp_list = [] #byte_image를 담기전에 decode 하기 위한 list
         #imgFIle은 np.array형태여야 fromarray에 담길수 있음
@@ -211,6 +220,11 @@ def male_To_female(randomDirName):
         a2b = 1
         model_type = 'male2female'
         
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            future = executor.submit(runImageTransfer, male2female_preloadModel,input_,user_key,a2b)
+            file_list = future.result()
+            print(file_list)
+        '''
         t1 = ThreadWithReturnValue(target=runImageTransfer, args=(male2female_preloadModel,input_,user_key,a2b))
         t1.user_id = user_key
         threads.append(t1)
@@ -223,7 +237,7 @@ def male_To_female(randomDirName):
         print(threads.pop(0))
         print(file_list)
         file_list.sort()
-        
+        '''
         byte_image_list = [] #byte_image를 담기위한 list
         tmp_list = [] #byte_image를 담기전에 decode 하기 위한 list
 
@@ -256,6 +270,11 @@ def no_glasses(randomDirName):
         a2b = 1
         model_type = 'no_glasses'
         
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            future = executor.submit(runImageTransfer, noglasses_preloadModel,input_,user_key,a2b)
+            file_list = future.result()
+            print(file_list)
+        '''
         t1 = ThreadWithReturnValue(target=runImageTransfer, args=(noglasses_preloadModel,input_,user_key,a2b))
         t1.user_id = user_key
         threads.append(t1)
@@ -268,7 +287,7 @@ def no_glasses(randomDirName):
         print(threads.pop(0))
         print(file_list)
         file_list.sort()
-        
+        '''
         byte_image_list = [] #byte_image를 담기위한 list
         tmp_list = [] #byte_image를 담기전에 decode 하기 위한 list
         
