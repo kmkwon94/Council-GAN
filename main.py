@@ -183,6 +183,7 @@ def person_To_anime(randomDirName):
             print(str(user_key)+": ", threads[0].user_id)
             if threads[0].is_alive():
                 threads[0].join()
+        print("hi !!!!! outside of while loop", user_key)
         threads[0].start()
         file_list = threads[0].join()
         print(threads.pop(0))
@@ -241,6 +242,7 @@ def male_To_female(randomDirName):
             print(str(user_key)+": ", threads[0].user_id)
             if threads[0].is_alive():
                 threads[0].join()
+        print("hi !!!!! outside of while loop", user_key)
         threads[0].start()
         file_list = threads[0].join()
         print(threads.pop(0))
@@ -292,6 +294,7 @@ def no_glasses(randomDirName):
             print(str(user_key)+": ", threads[0].user_id)
             if threads[0].is_alive():
                 threads[0].join()
+        print("hi !!!!! outside of while loop", user_key)
         threads[0].start()
         file_list = threads[0].join()
         print(threads.pop(0))
