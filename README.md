@@ -1,4 +1,4 @@
-# Ainize
+# Council-GAN
 You can run Council-GAN easily on Ainize.
 
 Just Click this button!
@@ -7,7 +7,6 @@ Just Click this button!
 
 ![ainize_example_img](/images/ainize_img.jpg) 
 
-# Council-GAN
 Implementation of our paper Breaking the Cycle - Colleagues are all you need (CVPR 2020)
 
 ### Paper
