@@ -158,7 +158,7 @@ def render_file():
 def healthz():
     return "I am alive", 200
 
-@app.route('/fileUpload', methods=['GET','POST'])
+@app.route('/fileUpload', methods=['POST'])
 def fileupload():
     #내가 전달 받는 request는 'file'과 'check_model'
     check_value = request.form['check_model']
