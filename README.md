@@ -3,7 +3,7 @@ You can run Council-GAN easily on Ainize.
 
 Just Click this button!
 
-[![Run on Ainize](https://ainize.ai/static/images/run_on_ainize_button.svg)](https://ainize.web.app/redirect?git_repo=github.com/kmkwon94/Council-GAN.git)
+[![Run on Ainize](https://ainize.ai/static/images/run_on_ainize_button.svg)](https://councilgan-kmkwon94.endpoint.ainize.ai/)
 
 ![ainize_example_img](/images/ainize_img.jpg) 
 
