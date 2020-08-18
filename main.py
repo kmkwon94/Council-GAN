@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from flask import Flask, render_template, request, redirect, url_for, jsonify, Response, after_this_request
+from flask import Flask, render_template, request, redirect, url_for, jsonify, Response, after_this_request, send_file
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
 from test_on_folder import runImageTransfer
@@ -176,17 +176,55 @@ def fileupload():
             path = '/home/user/upload/person2anime/'
             os.mkdir(path + randomDirName)
             f.save(path + randomDirName + '/' + secure_filename(f.filename))
-            return person_To_anime(randomDirName)
+            byte_image_list = person_To_anime(randomDirName)
+            return render_template('showImage.html', rawimg=byte_image_list)
         elif check_value == "m2f":
             path = '/home/user/upload/male2female/'
             os.mkdir(path + randomDirName)
             f.save(path + randomDirName + '/' +secure_filename(f.filename))
-            return male_To_female(randomDirName)
+            byte_image_list = male_To_female(randomDirName)
+            return render_template('showImage.html', rawimg=byte_image_list)
         else:
             path = '/home/user/upload/no_glasses/'
             os.mkdir(path + randomDirName)
             f.save(path + randomDirName + '/' + secure_filename(f.filename))
-            return no_glasses(randomDirName)
+            byte_image_list = no_glasses(randomDirName)
+            return render_template('showImage.html', rawimg=byte_image_list)
+    except Exception as e:
+        print(e)
+        return Response("upload file and load model is fail", status=400)
+
+@app.route('/convert_image', methods=['POST'])
+def convert_imgae():
+    check_value = request.form['check_model']
+    f = request.files['file']
+    
+    #handling over request by status code 429
+    global threads
+    print(len(threads),"convert_image")
+    if len(threads) > 10:
+        return Response("error : Too many requests", status=429)
+    
+    try:
+        randomDirName = str(uuid.uuid4()) #사용자끼리의 업로드한 이미지가 겹치지 않게끔 uuid를 이용하여 사용자를 구분하는 디렉터리를 만든다.
+        if check_value == "ani":
+            path = '/home/user/upload/person2anime/'
+            os.mkdir(path + randomDirName)
+            f.save(path + randomDirName + '/' + secure_filename(f.filename))
+            byte_image_list = person_To_anime(randomDirName)
+            return send_file(byte_image_list, mimetype="image/jpeg")
+        elif check_value == "m2f":
+            path = '/home/user/upload/male2female/'
+            os.mkdir(path + randomDirName)
+            f.save(path + randomDirName + '/' +secure_filename(f.filename))
+            byte_image_list = male_To_female(randomDirName)
+            return send_file(byte_image_list, mimetype="image/jpeg")
+        else:
+            path = '/home/user/upload/no_glasses/'
+            os.mkdir(path + randomDirName)
+            f.save(path + randomDirName + '/' + secure_filename(f.filename))
+            byte_image_list = no_glasses(randomDirName)
+            return send_file(byte_image_list, mimetype="image/jpeg")
     except Exception as e:
         print(e)
         return Response("upload file and load model is fail", status=400)
@@ -236,7 +274,8 @@ def person_To_anime(randomDirName):
         
         #input file과 output file을 모두 제거해주는 함수 호출
         remove(user_key, model_type)
-        return render_template('showImage.html', rawimg=byte_image_list)
+        return byte_image_list
+        #return render_template('showImage.html', rawimg=byte_image_list)
     except Exception as e:
         print(e)
         return Response("person2anime is fail", status=400)    
@@ -285,7 +324,8 @@ def male_To_female(randomDirName):
         
         #input file과 output file을 모두 제거해주는 함수 호출
         remove(user_key, model_type)
-        return render_template('showImage.html', rawimg=byte_image_list)
+        return byte_image_list
+        #return render_template('showImage.html', rawimg=byte_image_list)
     except Exception as e:
         print(e)
         return Response("male2female is fail", status=400)    
@@ -334,7 +374,8 @@ def no_glasses(randomDirName):
         
         #input file과 output file을 모두 제거해주는 함수 호출
         remove(user_key, model_type)
-        return render_template('showImage.html', rawimg=byte_image_list)
+        return byte_image_list
+        #return render_template('showImage.html', rawimg=byte_image_list)
     except Exception as e:
         print(e)
         return Response("no_glasses is fail", status=400)    
