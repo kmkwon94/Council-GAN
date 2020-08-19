@@ -32,7 +32,7 @@ info:
     name: "MIT License"
 
 servers:
-  - url: https://master-councilgan-api-kmkwon94.endpoint.ainize.ai/
+  - url: https://master-council-gan-kmkwon94.endpoint.ainize.ai
   
 paths:
   /convert_image:
