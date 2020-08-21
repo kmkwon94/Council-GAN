@@ -14,9 +14,9 @@ info:
     
     Recommendation :
     
-    * We recommend you that the input file will be the ID- photographs or something.
-    * This model is learned based on the White's images, so the White's rate of recognition is higher than Asian.
-    * The recognition rate of photos up to the upper body is higher than those with only the face.
+    * I'd recommend you use a sharpen image such as an ID photo for better result. 
+    * This model has been trained based on Caucasian's face images. So, the result with Caucasian's face images is better than Asian's face images.
+    * The result(recognition rate) of an image with upper-body will be better than with the only face.
     
     Original Repo of project : [https://github.com/Onr/Council-GAN](https://github.com/Onr/Council-GAN)
     
@@ -32,7 +32,7 @@ info:
     name: "MIT License"
 
 servers:
-  - url: https://master-council-gan-kmkwon94.endpoint.ainize.ai/
+  - url: https://master-council-gan-kmkwon94.endpoint.ainize.ai
   
 paths:
   /convert_image:
